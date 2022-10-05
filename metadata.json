@@ -1,0 +1,40 @@
+{
+  "icon": "calyptia.svg",
+  "ui": {
+    "dashboard-tab": {
+      "title": "Calyptia Core Extension",
+      "src": "index.html",
+      "root": "ui"
+    }
+  },
+  "host": {
+    "binaries": [
+      {
+        "darwin": [
+          {
+            "path": "/darwin/kubectl"
+          },
+          {
+            "path": "/darwin/calyptia"
+          }
+        ],
+        "windows": [
+          {
+            "path": "/windows/kubectl.exe"
+          },
+          {
+            "path": "/windows/calyptia.exe"
+          }
+        ],
+        "linux": [
+          {
+            "path": "/linux/calyptia"
+          },
+          {
+            "path": "/linux/kubectl"
+          }
+        ]
+      }
+    ]
+  }
+}
