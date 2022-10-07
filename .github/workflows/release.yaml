@@ -21,30 +21,27 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: sigstore/cosign-installer@main
-      - id: get_version
-        run: |
-          RELEASE_VERSION=$(echo $GITHUB_REF | sed -nE 's!refs/tags/!!p')
-          echo "::set-output name=release_version::$RELEASE_VERSION"
       
       - name: Get Docker tags
         id: docker_meta
         uses: docker/metadata-action@v4
         with:
           images: |
-            calyptia/core-docker-desktop-extension
-            ghcr.io/calyptia/core-docker-desktop-extension
+            calyptia/core-docker-desktop
+            ghcr.io/calyptia/core-docker-desktop
           tags: |
             type=semver,pattern={{version}}
             type=raw,value=latest
           labels: |
             org.opencontainers.image.title=calyptia
             org.opencontainers.image.description=Manage your Calyptia Core instances running on docker-desktop.
+            org.opencontainers.image.licenses="/licenses/calyptia.txt"
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      
+        uses: docker/setup-qemu-action@v2
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -60,11 +57,11 @@ jobs:
 
       - name: Build and push the image
         id: docker_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/arm
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
@@ -73,5 +70,6 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
       
       - name: Sign Container Image
+        continue-on-error: true
         run: |
-          COSIGN_EXPERIMENTAL=1 cosign sign --force calyptia/core-docker-desktop-extension@${{ steps.docker_build.outputs.digest }}
+          COSIGN_EXPERIMENTAL=1 cosign sign --force calyptia/core-docker-desktop@${{ steps.docker_build.outputs.digest }}
