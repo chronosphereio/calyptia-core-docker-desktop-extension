@@ -2,7 +2,6 @@ import React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import {DockerMuiThemeProvider} from "@docker/docker-mui-theme";
 import {Core} from "./calyptia/Core";
-import {Test} from "./calyptia/Test";
 import {Box, Stack} from "@mui/material";
 
 export const App = () => {
@@ -23,6 +22,5 @@ export const App = () => {
                 src="./images/calyptia_horizontal.svg"/>
         </Stack>
         <Core/>
-        <Test/>
     </DockerMuiThemeProvider>);
 }
