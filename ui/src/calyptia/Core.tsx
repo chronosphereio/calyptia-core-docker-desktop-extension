@@ -78,7 +78,7 @@ const checkK8sConnection = async (ddClient: v1.DockerDesktopClient) => {
 }
 
 const getCoreInfo = async (ddClient: v1.DockerDesktopClient) => {
-// Get the UUID from the first deployment with the relevant lablel
+    // Get the UUID from the first deployment with the relevant lablel
     let output = await hostCli(ddClient, "kubectl", ["get", "deployments", "-l", "calyptia_aggregator_id", "--output=jsonpath={.items[0].metadata.labels.calyptia_aggregator_id}"] );
     if (output?.stderr) {
         console.log("[getCoreInfo] : ", output.stderr);
@@ -138,33 +138,34 @@ export const Core = () => {
 
     let component
     if (isK8sEnabled()) {
-        // client.host.openExternal("https://cloud.calyptia.com");
-        component =<Stack direction="row" spacing={2}>
-                <TextField
-        value={projectToken}
-        onChange={(event) => setProjectToken(event.target.value)}
-        autoFocus
-        variant="outlined"
-        margin="dense"
-        id="token"
-        label="Calyptia Project Token"
-        type="text"
-        size="medium"
-        fullWidth
-        required/>
-        <Button onClick={uiCreateCoreInstance} color="primary" variant="outlined">
-            Create Core Instance
-        </Button>
-        {coreInstanceInfo ? (
-        <div>
-            <Typography>Core Instance Info:</Typography>
-            <Typography>{coreInstanceInfo}</Typography>
-        </div>
-        ) : (
-            ''
-            )}
-    </Stack>
+        if( coreInstanceInfo ) {
+            component =<Stack direction="row" spacing={2}>
+            <div>
+                <Typography>Core Instance Info:</Typography>
+                <Typography>{coreInstanceInfo}</Typography>
+            </div>
+            </Stack>
         } else {
+            // client.host.openExternal("https://cloud.calyptia.com");
+            component =<Stack direction="row" spacing={2}>
+            <TextField
+            value={projectToken}
+            onChange={(event) => setProjectToken(event.target.value)}
+            autoFocus
+            variant="outlined"
+            margin="dense"
+            id="token"
+            label="Calyptia Project Token"
+            type="text"
+            size="medium"
+            fullWidth
+            required/>
+            <Button onClick={uiCreateCoreInstance} color="primary" variant="outlined">
+                Create Core Instance
+            </Button>
+            </Stack>
+        }
+    } else {
         component = <Box>
         <Alert iconMapping={{
             error: <ErrorIcon fontSize="inherit"/>,
