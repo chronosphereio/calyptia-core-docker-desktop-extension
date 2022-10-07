@@ -1,4 +1,4 @@
-IMAGE?=calyptia/core-extension
+IMAGE?=calyptia/core-docker-desktop
 TAG?=latest
 
 BUILDER=buildx-multi-arch
