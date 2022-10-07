@@ -1,8 +1,7 @@
 import React, {useEffect} from "react";
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import {v1} from "@docker/extension-api-client-types";
-import {Alert, Box, Button, CircularProgress, TextField, Stack, Typography } from "@mui/material";
-import {blueGrey} from "@mui/material/colors";
+import {Alert, Box, Button, Link, TextField, Stack, Typography } from "@mui/material";
 import ErrorIcon from '@mui/icons-material/Error';
 
 // Note: This line relies on Docker Desktop's presence as a host application.
@@ -138,28 +137,24 @@ export const Core = () => {
 
     let component
     if (isK8sEnabled()) {
+        // Check if we have any details
         if( coreInstanceInfo ) {
             component =<Stack direction="row" spacing={2}>
             <div>
                 <Typography>Core Instance Info:</Typography>
                 <Typography>{coreInstanceInfo}</Typography>
+                <Button onClick={() => client.host.openExternal("https://core.calyptia.com/"+coreInstanceInfo)} color="primary" variant="outlined">
+                    View Core Instance
+                </Button>
             </div>
             </Stack>
         } else {
-            // client.host.openExternal("https://cloud.calyptia.com");
             component =<Stack direction="row" spacing={2}>
-            <TextField
-            value={projectToken}
-            onChange={(event) => setProjectToken(event.target.value)}
-            autoFocus
-            variant="outlined"
-            margin="dense"
-            id="token"
-            label="Calyptia Project Token"
-            type="text"
-            size="medium"
-            fullWidth
-            required/>
+            <Button onClick={() => client.host.openExternal("https://cloud.calyptia.com/settings")} color="primary" variant="outlined">
+                Get token
+            </Button>
+            <TextField value={projectToken} onChange={(event) => setProjectToken(event.target.value)}
+                autoFocus variant="outlined" margin="dense" id="token" label="Calyptia Project Token" type="text" size="medium" fullWidth required/>
             <Button onClick={uiCreateCoreInstance} color="primary" variant="outlined">
                 Create Core Instance
             </Button>
