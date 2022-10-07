@@ -2,7 +2,7 @@
   "icon": "calyptia.svg",
   "ui": {
     "dashboard-tab": {
-      "title": "Calyptia Core Extension",
+      "title": "Calyptia Core",
       "src": "index.html",
       "root": "ui"
     }
