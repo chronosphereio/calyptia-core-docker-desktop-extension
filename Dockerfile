@@ -47,6 +47,7 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
     && chmod +x ./calyptia.exe && mv ./calyptia.exe /windows/ \
     && chmod +x ./kubectl.exe && mv ./kubectl.exe /windows/ 
 
+COPY LICENSE.txt .
 COPY metadata.json .
 COPY calyptia.svg .
 COPY --from=client-builder /ui/build ui
