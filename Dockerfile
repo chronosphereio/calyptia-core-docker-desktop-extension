@@ -16,8 +16,8 @@ FROM alpine
 
 # These are all required to be present in order to be published:
 # https://docs.docker.com/desktop/extensions-sdk/extensions/labels/
-LABEL org.opencontainers.image.title="calyptia-core-extension" \
-    org.opencontainers.image.description="Calyptia Core Docker Extension" \
+LABEL org.opencontainers.image.title="calyptia-core-docker-desktop" \
+    org.opencontainers.image.description="Calyptia Core Docker Docker Desktop Extension" \
     org.opencontainers.image.vendor="Calyptia Inc." \
     com.docker.desktop.extension.api.version=">= 0.2.3" \
     com.docker.extension.detailed-description="Automate integration with Calyptia Core to create an instance in your local Kubernetes cluster." \
