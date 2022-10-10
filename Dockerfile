@@ -24,7 +24,8 @@ LABEL org.opencontainers.image.title="calyptia-core-extension" \
     com.docker.extension.publisher-url="https://www.calyptia.com" \
     com.docker.extension.changelog="Initial version, creation of core instance automatically" \
     com.docker.desktop.extension.icon="" \
-    com.docker.extension.screenshots=""
+    com.docker.extension.screenshots="" \
+    com.docker.extension.additional-urls=""
 
 RUN apk add curl
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
