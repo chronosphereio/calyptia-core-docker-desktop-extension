@@ -12,6 +12,7 @@ on:
       - main
     paths-ignore:
       - .github/**
+      - "**/*.md"
 
 jobs:
   # For PRs and anything not a tag
@@ -21,7 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
       packages: write
     steps:
       - uses: actions/checkout@v3
@@ -46,8 +46,8 @@ jobs:
           images: |
             ghcr.io/calyptia/core-docker-desktop
           tags: |
-            type=semver,pattern={{version}}
-            type=raw,value=latest
+            type=sha,prefix=,suffix=,format=short
+            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
           labels: |
             org.opencontainers.image.title="calyptia-core-docker-desktop"
             org.opencontainers.image.description=Manage your Calyptia Core instances running on docker-desktop.
