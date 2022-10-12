@@ -1,26 +1,31 @@
-import CssBaseline from "@mui/material/CssBaseline";
-import {DockerMuiThemeProvider} from "@docker/docker-mui-theme";
-import {Core} from "./calyptia/Core";
-import {Box, Stack} from "@mui/material";
-import Logo from "./images/calyptia_horizontal.svg"
+import { DockerMuiThemeProvider } from "@docker/docker-mui-theme"
+import { StyledEngineProvider } from "@mui/material"
+import CssBaseline from "@mui/material/CssBaseline"
+import { Core } from "./calyptia/Core"
+import AuthGuard from "./components/AuthGuard"
+import { AuthProvider } from "./hooks/auth"
+import { DockerDesktopProvider } from "./hooks/docker-desktop"
+import { ProjectTokenProvider } from "./hooks/project-token"
 
 export const App = () => {
-    return (<DockerMuiThemeProvider>
-        <CssBaseline/>
-        <Stack direction="column" spacing={2}>
-            <Box
-                component="img"
-                sx={{
-                    alignSelf: "left",
-                    height: 100,
-                    width: 300,
-                    marginTop: "30px",
-                    marginBottom: "10px",
-                    maxHeight: {xs: 150, md: 350},
-                    maxWidth: {xs: 150, md: 350},
-                }}
-                src={Logo} />
-        </Stack>
-        <Core/>
-    </DockerMuiThemeProvider>);
+    return (
+        <DockerDesktopProvider>
+            <StyledEngineProvider injectFirst>
+                <DockerMuiThemeProvider>
+                    <CssBaseline />
+                    <AuthProvider
+                        auth0Domain={process.env.REACT_APP_AUTH0_DOMAIN}
+                        auth0ClientID={process.env.REACT_APP_AUTH0_CLIENT_ID}
+                        auth0Audience={process.env.REACT_APP_AUTH0_AUDIENCE}
+                    >
+                        <AuthGuard cloudBaseURL={process.env.REACT_APP_CLOUD_BASE_URL}>
+                            <ProjectTokenProvider>
+                                <Core />
+                            </ProjectTokenProvider>
+                        </AuthGuard>
+                    </AuthProvider>
+                </DockerMuiThemeProvider>
+            </StyledEngineProvider>
+        </DockerDesktopProvider>
+    )
 }

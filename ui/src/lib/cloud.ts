@@ -1,0 +1,85 @@
+import { ReuseTokenSource } from "./auth"
+import { handleResp } from "./util"
+
+export type FetchProjectsOpts = {
+    last?: number
+    before?: string
+}
+
+export type Project = {
+    id: string
+    name: string
+}
+
+export type FetchTokensOpts = {
+    projectID: string
+    last?: number
+    before?: string
+}
+
+export type Token = {
+    id: string
+    token: string
+}
+
+export class Client {
+    constructor(private baseURL: string, private tokenSource: ReuseTokenSource) { }
+
+    async fetchProjects(signal: AbortSignal, opts?: FetchProjectsOpts) {
+        const u = new URL("/v1/projects", this.baseURL)
+        if (opts !== undefined) {
+            if (opts.last !== undefined) {
+                u.searchParams.set("last", String(opts.last))
+            }
+            if (opts.before !== undefined) {
+                u.searchParams.set("before", opts.before)
+            }
+        }
+
+        const tok = await this.tokenSource.token()
+        const resp = await fetch(u.toString(), {
+            signal,
+            method: "GET",
+            headers: {
+                Authorization: tok.tokenType + " " + tok.accessToken,
+            }
+        })
+        const json = await handleResp<Project[]>(resp)
+        return new HTTPRespose(json, resp)
+    }
+
+    async fetchTokens(signal: AbortSignal, opts: FetchTokensOpts) {
+        const u = new URL("/v1/projects/" + encodeURIComponent(opts.projectID) + "/tokens", this.baseURL)
+        if (opts.last !== undefined) {
+            u.searchParams.set("last", String(opts.last))
+        }
+        if (opts.before !== undefined) {
+            u.searchParams.set("before", opts.before)
+        }
+
+        const tok = await this.tokenSource.token()
+        const resp = await fetch(u.toString(), {
+            signal,
+            method: "GET",
+            headers: {
+                Authorization: tok.tokenType + " " + tok.accessToken,
+            }
+        })
+        const json = await handleResp<Token[]>(resp)
+        return new HTTPRespose(json, resp)
+    }
+}
+
+class HTTPRespose<T> {
+    url: string
+    statusCode: number
+    headers: Headers
+    data: T
+
+    constructor(data: T, resp: Response) {
+        this.url = resp.url
+        this.statusCode = resp.status
+        this.headers = resp.headers
+        this.data = data
+    }
+}
