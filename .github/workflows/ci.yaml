@@ -12,6 +12,7 @@ on:
       - main
     paths-ignore:
       - .github/**
+      - "**/*.md"
 
 jobs:
   # For PRs and anything not a tag
