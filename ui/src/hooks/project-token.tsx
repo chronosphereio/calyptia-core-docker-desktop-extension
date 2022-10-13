@@ -1,3 +1,7 @@
+import Alert from "@mui/material/Alert"
+import AlertTitle from "@mui/material/AlertTitle"
+import Box from "@mui/material/Box"
+import LinearProgress from "@mui/material/LinearProgress"
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react"
 import { Token } from "../lib/cloud"
 import { useCloudClient } from "./cloud"
@@ -30,6 +34,7 @@ export function ProjectTokenProvider(props: PropsWithChildren<unknown>) {
         }
 
         run().catch(err => {
+            console.error(err)
             if (err.name !== "AbortError") {
                 setErr(err)
             }
@@ -38,21 +43,22 @@ export function ProjectTokenProvider(props: PropsWithChildren<unknown>) {
         return () => {
             ctrl.abort()
         }
-    })
+    }, [])
 
     if (err !== null) {
         return (
-            <div>
-                Something went wrong: {err.message}
-            </div>
+            <Alert severity="error">
+                <AlertTitle>Failed to retrieve Calyptia project token</AlertTitle>
+                {err.message}
+            </Alert>
         )
     }
 
     if (tok === null) {
         return (
-            <div>
-                Loading... please wait.
-            </div>
+            <Box sx={{ width: '100%' }}>
+                <LinearProgress />
+            </Box>
         )
     }
 

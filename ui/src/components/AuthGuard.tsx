@@ -1,3 +1,10 @@
+import LoadingButton from '@mui/lab/LoadingButton'
+import Alert from "@mui/material/Alert"
+import AlertTitle from "@mui/material/AlertTitle"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import LinearProgress from "@mui/material/LinearProgress"
+import Typography from "@mui/material/Typography"
 import { PropsWithChildren, useEffect, useState } from "react"
 import { useAuthClient } from "../hooks/auth"
 import { CloudProvider } from "../hooks/cloud"
@@ -13,6 +20,7 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
     const auth = useAuthClient()
     const [tokenSource, setTokenSource] = useState<ReuseTokenSource | null>(null)
     const [visitURL, setVisitURL] = useState<string | null>(null)
+    const [authorizing, setAuthorizing] = useState(false)
     const [err, setErr] = useState<Error | null>(null)
 
     useEffect(() => {
@@ -28,6 +36,7 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
                 setVisitURL(dc.verificationURIComplete)
 
                 tok = await dc.fetchToken(ctrl.signal)
+                setAuthorizing(false)
                 localStorage.setItem("user_token", tok.toJSON())
             }
 
@@ -52,11 +61,15 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
 
     const onVisit = () => {
         dd.host.openExternal(visitURL)
+        setAuthorizing(true)
     }
 
     if (err !== null) {
         return (
-            <div>Something went wrong: {err.message}</div>
+            <Alert severity="error">
+                <AlertTitle>Failed to authorize</AlertTitle>
+                {err.message}
+            </Alert>
         )
     }
 
@@ -68,16 +81,29 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
 
     if (visitURL !== null) {
         return (
-            <div>
-                Please visit the following URL to authorize docker-desktop to access your Calyptia account.<br />
-                <a href={visitURL} target="_blank" rel="noopener noreferrer" onClick={onVisit}>{visitURL}</a>
-            </div>
+            <Box sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "90vh",
+                gap: "1rem",
+            }}>
+                <Typography>
+                    Click the following button to authorize docker-desktop to access your Calyptia account.
+                </Typography>
+                {authorizing ? (
+                    <LoadingButton loading variant="outlined" onClick={onVisit}>Authorize</LoadingButton>
+                ) : (
+                    <Button color="primary" variant="outlined" onClick={onVisit}>Authorize</Button>
+                )}
+            </Box>
         )
     }
 
     return (
-        <div>
-            Loading... please wait.
-        </div>
+        <Box sx={{ width: '100%' }}>
+            <LinearProgress />
+        </Box>
     )
 }
