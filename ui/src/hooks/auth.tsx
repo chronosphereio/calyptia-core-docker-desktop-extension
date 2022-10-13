@@ -1,15 +1,15 @@
 import { createContext, PropsWithChildren, useContext } from "react"
 import { Client as AuthClient } from "../lib/auth"
 
-const AuthContext = createContext(null as unknown as AuthClient)
+const AuthClientContext = createContext(null as unknown as AuthClient)
 
-export type AuthProviderProps = {
+export type AuthClientProviderProps = {
     auth0Domain: string
     auth0ClientID: string
     auth0Audience: string
 }
 
-export function AuthProvider(props: PropsWithChildren<AuthProviderProps>) {
+export function AuthClientProvider(props: PropsWithChildren<AuthClientProviderProps>) {
     const authClient = new AuthClient({
         domain: props.auth0Domain,
         clientID: props.auth0ClientID,
@@ -17,10 +17,10 @@ export function AuthProvider(props: PropsWithChildren<AuthProviderProps>) {
     })
 
     return (
-        <AuthContext.Provider value={authClient} children={props.children} />
+        <AuthClientContext.Provider value={authClient} children={props.children} />
     )
 }
 
 export function useAuthClient() {
-    return useContext(AuthContext)
+    return useContext(AuthClientContext)
 }
