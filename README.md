@@ -14,7 +14,8 @@ It will then register this instance with the Calyptia infrastructure for easy ma
 3. Run `docker extension install ghcr.io/calyptia/core-docker-desktop:latest` to get the latest version.
    - To update an existing version, run `docker extension update ghcr.io/calyptia/core-docker-desktop:latest`.
 4. Navigate to the "Calyptia Core" option in the "Extensions" section of the Docker Desktop Dashboard to use.
-   - This will detect whether you have a local Kubernetes cluster or not and display an error message if not.
+   - Initially it will trigger authentication against Calyptia Cloud via a simple URL.
+   - It will then detect whether you have a local Kubernetes cluster or not and display an error message if not.
    - It will then check if that local Kubernetes cluster already has a Calyptia Core instance and provide the details on that if so.
    - If there is no local instance then it will offer the option to create one for you.
 
