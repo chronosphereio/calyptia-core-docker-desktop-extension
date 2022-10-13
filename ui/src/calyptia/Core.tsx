@@ -146,8 +146,7 @@ export const Core = () => {
     }
   }, [])
   const createCoreInstance = async (
-    ddClient: v1.DockerDesktopClient,
-    args: string[]
+    ddClient: v1.DockerDesktopClient
   ) => {
     setCoreInstanceInfo(null)
 
@@ -161,6 +160,14 @@ export const Core = () => {
       return false
     }
 
+    let args = [
+      "create",
+      "core_instance",
+      "kubernetes",
+      "--token",
+      projectToken.token,
+    ]
+    
     let output = await hostCli(ddClient, "calyptia", args)
 
     if (output?.stderr) {
@@ -172,14 +179,7 @@ export const Core = () => {
 
   const uiCreateCoreInstance = async () => {
     try {
-      let args = [
-        "create",
-        "core_instance",
-        "kubernetes",
-        "--token",
-        projectToken.token,
-      ]
-      const isCreated = await createCoreInstance(client, args)
+      const isCreated = await createCoreInstance(client)
       if (isCreated) {
         client.desktopUI.toast.success("core instance creation successful")
       } else {
