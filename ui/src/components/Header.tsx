@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 
 export default function Header() {
     const onLogout = () => {
-        localStorage.removeItem("user_token")
+        localStorage.clear()
         window.location.reload()
     }
 
