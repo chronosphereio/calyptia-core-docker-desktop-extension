@@ -9,11 +9,14 @@ It will then register this instance with the Calyptia infrastructure for easy ma
 1. Ensure Docker Desktop is set up to allow extensions and start the Kubernetes cluster.
    - Go to Preferences -> Kubernetes -> Check "Enable kubernetes".
    - Go to Preferences -> Extensions -> Check "Enable Docker Extensions".
-2. If not installed, run `docker extension install ghcr.io/calyptia/core-docker-desktop:latest` to get the latest version.
+2. Run `docker pull ghcr.io/calyptia/core-docker-desktop:latest` to ensure the local of the extension is updated.
    - Replace the container name or tag with any specific version you want to use.
-3. To update an existing version, run `docker extension update ghcr.io/calyptia/core-docker-desktop:latest`.
-4. Grab your project token from <https://cloud.calyptia.com> and use this when running the creation task.
-5. Navigate to the "Calyptia Core" option in the "Extensions" section of the Docker Desktop Dashboard.
+3. Run `docker extension install ghcr.io/calyptia/core-docker-desktop:latest` to get the latest version.
+   - To update an existing version, run `docker extension update ghcr.io/calyptia/core-docker-desktop:latest`.
+4. Navigate to the "Calyptia Core" option in the "Extensions" section of the Docker Desktop Dashboard to use.
+   - This will detect whether you have a local Kubernetes cluster or not and display an error message if not.
+   - It will then check if that local Kubernetes cluster already has a Calyptia Core instance and provide the details on that if so.
+   - If there is no local instance then it will offer the option to create one for you.
 
 ## Prerequisites
 
