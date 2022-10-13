@@ -2,20 +2,20 @@ import { createContext, PropsWithChildren, useContext } from "react"
 import { ReuseTokenSource } from "../lib/auth"
 import { Client as CloudClient } from "../lib/cloud"
 
-const CloudContext = createContext(null as unknown as CloudClient)
+const CloudClientContext = createContext(null as unknown as CloudClient)
 
-export type CloudProviderProps = {
+export type CloudClientProviderProps = {
     baseURL: string
     tokenSource: ReuseTokenSource
 }
 
-export function CloudProvider(props: PropsWithChildren<CloudProviderProps>) {
+export function CloudClientProvider(props: PropsWithChildren<CloudClientProviderProps>) {
     const cloudClient = new CloudClient(props.baseURL, props.tokenSource)
     return (
-        <CloudContext.Provider value={cloudClient} children={props.children} />
+        <CloudClientContext.Provider value={cloudClient} children={props.children} />
     )
 }
 
 export function useCloudClient() {
-    return useContext(CloudContext)
+    return useContext(CloudClientContext)
 }
