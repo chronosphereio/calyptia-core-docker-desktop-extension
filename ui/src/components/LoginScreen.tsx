@@ -32,7 +32,7 @@ export default function LoginScreen(props: LoginScreenProps) {
                 <Box sx={{ mb: 2 }}>
                     <img src="/images/logo-light.svg" alt="Logo" />
                 </Box>
-                <Typography color="#1669aa" variant="h5">Observability, similified.</Typography>
+                <Typography color="#1669aa" variant="h5">Observability, simplified.</Typography>
                 <Typography color="#0d3d61" variant="body1">Eliminate the complexity of configuring and maintaining your observability pipelines.</Typography>
                 {props.loading ? (
                     // AbcIcon is there only to take space so the text doesn't overlay with the loader indicator.
