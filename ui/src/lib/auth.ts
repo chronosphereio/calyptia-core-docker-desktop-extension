@@ -83,6 +83,41 @@ export class Token {
     }
 }
 
+export type UserInfo = {
+    name: string
+    given_name: string
+    family_name: string
+    middle_name: string
+    nickname: string
+    preferred_username: string
+    picture: string
+    email: string
+    email_verified: boolean
+}
+
+export function getUserInfoDisplayName(usr: UserInfo) {
+    if (typeof usr.name === "string" && usr.name !== "") {
+        return usr.name
+    }
+
+    {
+        const s = [usr.given_name, usr.middle_name, usr.family_name].join(" ")
+        if (s !== "") {
+            return s
+        }
+    }
+
+    if (typeof usr.nickname === "string" && usr.nickname !== "") {
+        return usr.nickname
+    }
+
+    if (typeof usr.preferred_username === "string" && usr.preferred_username !== "") {
+        return usr.preferred_username
+    }
+
+    return ""
+}
+
 export function tokenFromJSON(text: string) {
     const json = JSON.parse(text)
     const tok = new Token()
@@ -116,6 +151,10 @@ export class Client {
 
     get tokenEndpoint() {
         return "https://" + this.domain + "/oauth/token"
+    }
+
+    get userInfoEndpoint() {
+        return "https://" + this.domain + "/userinfo"
     }
 
     async fetchDeviceCode(signal: AbortSignal): Promise<DeviceCode> {
@@ -165,6 +204,20 @@ export class Client {
             clientID: this.clientID,
             audience: this.audience,
         }), store)
+    }
+
+    async fetchUserInfo(signal: AbortSignal, tok: Token) {
+        const body = new URLSearchParams()
+        body.set("access_token", tok.accessToken)
+
+        const resp = await fetch(this.userInfoEndpoint, {
+            signal,
+            method: "GET",
+            headers: {
+                Authorization: tok.tokenType + " " + tok.accessToken,
+            },
+        })
+        return handleResp<UserInfo>(resp)
     }
 }
 

@@ -2,7 +2,8 @@ import { PropsWithChildren, useEffect, useState } from "react"
 import { useAuthClient } from "../hooks/auth"
 import { CloudClientProvider } from "../hooks/cloud"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
-import { ReuseTokenSource, Token, tokenFromJSON } from "../lib/auth"
+import { UserInfoProvider } from "../hooks/user-info"
+import { ReuseTokenSource, Token, tokenFromJSON, UserInfo } from "../lib/auth"
 import LoginScreen from "./LoginScreen"
 
 export type AuthGuardProps = {
@@ -12,6 +13,7 @@ export type AuthGuardProps = {
 export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
     const dd = useDockerDesktopClient()
     const auth = useAuthClient()
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
     const [tokenSource, setTokenSource] = useState<ReuseTokenSource | null>(null)
     const [loading, setLoading] = useState(false)
 
@@ -27,8 +29,10 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
 
     useEffect(() => {
         const tokenItem = localStorage.getItem("user_token")
-        if (tokenItem !== null) {
+        const userItem = localStorage.getItem("user_info")
+        if (tokenItem !== null && userItem !== null) {
             setTokenSourceFromTok(tokenFromJSON(tokenItem))
+            setUserInfo(JSON.parse(userItem))
         }
     }, [])
 
@@ -40,8 +44,14 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
             dd.host.openExternal(dc.verificationURIComplete)
 
             const tok = await dc.fetchToken(ctrl.signal)
-            setTokenSourceFromTok(tok)
+            const usr = await auth.fetchUserInfo(ctrl.signal, tok)
+
+
             localStorage.setItem("user_token", tok.toJSON())
+            localStorage.setItem("user_info", JSON.stringify(usr))
+
+            setTokenSourceFromTok(tok)
+            setUserInfo(usr)
         } catch (err) {
             if (err.name !== "AbortError") {
                 dd.desktopUI.toast.error(err.message)
@@ -52,9 +62,11 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
         }
     }
 
-    if (tokenSource !== null) {
+    if (tokenSource !== null && userInfo !== null) {
         return (
-            <CloudClientProvider baseURL={props.cloudBaseURL} tokenSource={tokenSource} children={props.children} />
+            <CloudClientProvider baseURL={props.cloudBaseURL} tokenSource={tokenSource}>
+                <UserInfoProvider userInfo={userInfo} children={props.children} />
+            </CloudClientProvider>
         )
     }
 

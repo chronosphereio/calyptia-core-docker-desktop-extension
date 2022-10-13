@@ -5,7 +5,7 @@ import { Core } from "./calyptia/Core"
 import AuthGuard from "./components/AuthGuard"
 import Header from "./components/Header"
 import { AuthClientProvider } from "./hooks/auth"
-import { DockerDesktopProvider } from "./hooks/docker-desktop"
+import { DockerDesktopClientProvider } from "./hooks/docker-desktop"
 import { ProjectTokenProvider } from "./hooks/project-token"
 
 const theme = createTheme({
@@ -19,7 +19,7 @@ const theme = createTheme({
 
 export function App() {
     return (
-        <DockerDesktopProvider>
+        <DockerDesktopClientProvider>
             <ThemeProvider theme={theme}>
                 <CssBaseline />
                 <AuthClientProvider
@@ -38,6 +38,6 @@ export function App() {
                     </AuthGuard>
                 </AuthClientProvider>
             </ThemeProvider>
-        </DockerDesktopProvider>
+        </DockerDesktopClientProvider>
     )
 }
