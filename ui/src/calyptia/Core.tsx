@@ -54,22 +54,6 @@ const hostCli = async (
   return ddClient.extension.host?.cli.exec(command, args)
 }
 
-// Retrieves host's current k8s context
-const getCurrentHostContext = async (ddClient: v1.DockerDesktopClient) => {
-  // kubectl config view -o jsonpath='{.current-context}'
-  let output = await hostCli(ddClient, "kubectl", [
-    "config",
-    "view",
-    "-o",
-    "jsonpath='{.current-context}'",
-  ])
-  if (output?.stderr) {
-    console.log("[getCurrentHostContext] : ", output.stderr)
-    return {}
-  }
-  return output?.stdout
-}
-
 // Retrieves `kubectl cluster-info` context-wise
 const checkK8sConnection = async (ddClient: v1.DockerDesktopClient) => {
   // kubectl cluster-info --context context-name
@@ -77,7 +61,7 @@ const checkK8sConnection = async (ddClient: v1.DockerDesktopClient) => {
     let output = await hostCli(ddClient, "kubectl", [
       "cluster-info",
       "--request-timeout",
-      "2s",
+      "1s",
       "--context",
       DockerDesktop,
     ])
@@ -139,7 +123,7 @@ export const Core = () => {
         setCoreInstanceInfo,
         setIsLoading
       )
-    }, 5000)
+    }, 3000)
 
     return () => {
       clearInterval(dataInterval)
@@ -150,22 +134,14 @@ export const Core = () => {
   ) => {
     setCoreInstanceInfo(null)
 
-    let context = await getCurrentHostContext(ddClient)
-    // We only want to work with the local K8S instance, not a remote one 
-    // and currenly we require it to be set on the host explicitly
-    if (context != DockerDesktop) {
-      console.log(
-        "[createCoreInstance] : Invalid context or error retrieving " + context
-      )
-      return false
-    }
-
     let args = [
       "create",
       "core_instance",
       "kubernetes",
       "--token",
       projectToken.token,
+      "--kube-context",
+      DockerDesktop
     ]
     
     let output = await hostCli(ddClient, "calyptia", args)
@@ -253,13 +229,12 @@ export const Core = () => {
             severity="error"
             color="error"
           >
-            Seems like Kubernetes is not reachable from your Docker Desktop.
+            Seems like a local Kubernetes cluster is not reachable from your Docker Desktop.
             Please take a look at the{" "}
             <a href="https://docs.docker.com/desktop/kubernetes/">
               docker documentation
             </a>{" "}
-            on how to enable the Kubernetes server in docker-desktop and then
-            select docker-desktop context.
+            on how to enable the Kubernetes server in Docker Desktop.
           </Alert>
         </Box>
       )
