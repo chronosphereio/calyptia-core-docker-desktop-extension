@@ -5,7 +5,9 @@ import {
   Alert,
   Box,
   Button,
-  CircularProgress, Stack, Typography
+  CircularProgress, 
+  Stack, 
+  Typography
 } from "@mui/material"
 import { blueGrey } from "@mui/material/colors"
 import React, { useEffect } from "react"
@@ -16,7 +18,6 @@ import { useProjectToken } from "../hooks/project-token"
 const client = createDockerDesktopClient()
 
 const DockerDesktop = "docker-desktop"
-const CurrentExtensionContext = "currentExtensionContext"
 const IsK8sEnabled = "isK8sEnabled"
 
 const isK8sEnabled = () => {
@@ -24,18 +25,15 @@ const isK8sEnabled = () => {
 }
 
 const refreshData = async (
-  setCurrentHostContext: React.Dispatch<React.SetStateAction<any>>,
   setCoreInstanceInfo: React.Dispatch<React.SetStateAction<any>>,
   setIsLoading: React.Dispatch<React.SetStateAction<any>>
 ) => {
   try {
     if (isK8sEnabled()) {
       const result = await Promise.all([
-        getCurrentHostContext(client),
         getCoreInfo(client),
       ])
-      setCurrentHostContext(result[0])
-      setCoreInstanceInfo(result[1])
+      setCoreInstanceInfo(result[0])
     }
   } catch (err: any) {
     if ("stdout" in err && err.stdout.includes("fatal")) {
@@ -45,12 +43,6 @@ const refreshData = async (
   }
   // Allow us to continue now
   setIsLoading(false)
-}
-
-// Change context on extension container
-const getExtensionContext = () => {
-  // retrieve extension current context
-  return localStorage.getItem(CurrentExtensionContext) || DockerDesktop
 }
 
 // Common function to call host.cli.exec
@@ -87,7 +79,7 @@ const checkK8sConnection = async (ddClient: v1.DockerDesktopClient) => {
       "--request-timeout",
       "2s",
       "--context",
-      getExtensionContext(),
+      DockerDesktop,
     ])
     if (output?.stderr) {
       console.log("[checkK8sConnection] : ", output.stderr)
@@ -126,7 +118,6 @@ const getCoreInfo = async (ddClient: v1.DockerDesktopClient) => {
 
 export const Core = () => {
   const projectToken = useProjectToken()
-  const [currentHostContext, setCurrentHostContext] = React.useState("")
   const [coreInstanceInfo, setCoreInstanceInfo] = React.useState<
     string | undefined
   >()
@@ -138,7 +129,6 @@ export const Core = () => {
       // @ts-ignore
       checkK8sConnection(client)
       await refreshData(
-        setCurrentHostContext,
         setCoreInstanceInfo,
         setIsLoading
       )
@@ -146,7 +136,6 @@ export const Core = () => {
 
     const dataInterval = setInterval(() => {
       return refreshData(
-        setCurrentHostContext,
         setCoreInstanceInfo,
         setIsLoading
       )
@@ -162,10 +151,12 @@ export const Core = () => {
   ) => {
     setCoreInstanceInfo(null)
 
-    // We only want to work with the local K8S instance, not a remote one
-    if (currentHostContext != DockerDesktop) {
+    let context = await getCurrentHostContext(ddClient)
+    // We only want to work with the local K8S instance, not a remote one 
+    // and currenly we require it to be set on the host explicitly
+    if (context != DockerDesktop) {
       console.log(
-        "[createCoreInstance] : Non-local context " + { currentHostContext }
+        "[createCoreInstance] : Invalid context or error retrieving " + context
       )
       return false
     }
@@ -180,28 +171,24 @@ export const Core = () => {
   }
 
   const uiCreateCoreInstance = async () => {
-    if (currentHostContext != DockerDesktop) {
-      client.desktopUI.toast.error("non-local Kubernetes context")
-    } else {
-      try {
-        let args = [
-          "create",
-          "core_instance",
-          "kubernetes",
-          "--token",
-          projectToken.token,
-        ]
-        const isCreated = await createCoreInstance(client, args)
-        if (isCreated) {
-          client.desktopUI.toast.success("core instance creation successful")
-        } else {
-          client.desktopUI.toast.error("core instance creation failed")
-        }
-      } catch (err) {
-        client.desktopUI.toast.error(
-          "core instance creation failed: " + JSON.stringify(err)
-        )
+    try {
+      let args = [
+        "create",
+        "core_instance",
+        "kubernetes",
+        "--token",
+        projectToken.token,
+      ]
+      const isCreated = await createCoreInstance(client, args)
+      if (isCreated) {
+        client.desktopUI.toast.success("core instance creation successful")
+      } else {
+        client.desktopUI.toast.error("core instance creation failed")
       }
+    } catch (err) {
+      client.desktopUI.toast.error(
+        "core instance creation failed: " + JSON.stringify(err)
+      )
     }
   }
 
