@@ -48,7 +48,7 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
         return () => {
             ctrl.abort()
         }
-    }, [])
+    }, [auth])
 
     const onVisit = () => {
         dd.host.openExternal(visitURL)
