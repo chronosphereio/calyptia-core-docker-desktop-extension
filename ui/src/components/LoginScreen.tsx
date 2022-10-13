@@ -5,6 +5,7 @@ import Button from "@mui/material/Button"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
+import logoLightSrc from "../images/logo-light.svg"
 
 export type LoginScreenProps = {
     loading: boolean
@@ -30,7 +31,7 @@ export default function LoginScreen(props: LoginScreenProps) {
                 gap: ".5rem",
             }}>
                 <Box sx={{ mb: 2 }}>
-                    <img src="/images/logo-light.svg" alt="Logo" />
+                    <img src={logoLightSrc} alt="Logo" />
                 </Box>
                 <Typography color="#1669aa" variant="h5">Observability, simplified.</Typography>
                 <Typography color="#0d3d61" variant="body1">Eliminate the complexity of configuring and maintaining your observability pipelines.</Typography>
