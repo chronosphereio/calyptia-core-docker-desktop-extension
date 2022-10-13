@@ -3,6 +3,7 @@ import { StyledEngineProvider } from "@mui/material"
 import CssBaseline from "@mui/material/CssBaseline"
 import { Core } from "./calyptia/Core"
 import AuthGuard from "./components/AuthGuard"
+import Header from "./components/Header"
 import { AuthProvider } from "./hooks/auth"
 import { DockerDesktopProvider } from "./hooks/docker-desktop"
 import { ProjectTokenProvider } from "./hooks/project-token"
@@ -20,6 +21,8 @@ export const App = () => {
                     >
                         <AuthGuard cloudBaseURL={process.env.REACT_APP_CLOUD_BASE_URL}>
                             <ProjectTokenProvider>
+                                <Header />
+                                <br />
                                 <Core />
                             </ProjectTokenProvider>
                         </AuthGuard>
