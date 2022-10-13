@@ -19,6 +19,13 @@ It will then register this instance with the Calyptia infrastructure for easy ma
    - It will then check if that local Kubernetes cluster already has a Calyptia Core instance and provide the details on that if so.
    - If there is no local instance then it will offer the option to create one for you.
 
+## FAQs
+
+1. Please see platform-specific FAQs here: <https://docs.docker.com/desktop/faqs/general/>
+2. The extensions section is a good starting point for more help specific to extensions: <https://docs.docker.com/desktop/extensions/>
+3. The Docker documentation has an extensive troubleshooting section: <https://docs.docker.com/desktop/troubleshoot/overview/>
+4. Ensure the correct [context](https://docs.docker.com/engine/context/working-with-contexts/) is set when using Docker Desktop particularly if Docker Engine is running as well: <https://docs.docker.com/desktop/faqs/linuxfaqs/#context>
+
 ## Prerequisites
 
 In order to run this extension, you must have Docker Desktop 4.12.0 or later installed.
