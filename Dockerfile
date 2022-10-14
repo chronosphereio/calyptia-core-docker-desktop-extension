@@ -29,8 +29,9 @@ LABEL org.opencontainers.image.title="calyptia-core-docker-desktop" \
     com.docker.desktop.extension.icon="https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/calyptia.svg" \
     com.docker.extension.screenshots='[\
     {"alt": "Main page", "url": "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/screenshots/login.png"},\
-    {"alt": "Existing core instance info", "url": "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/screenshots/existing-cluster.png"},\
-    {"alt": "Manage core instance with Calyptia", "url": "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/screenshots/manage-cluster.png}]' \
+    {"alt": "Existing core instance", "url": "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/screenshots/existing-cluster.png"},\
+    {"alt": "Core overview", "url": "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/core-overview.png"}\
+    ]' \
     com.docker.extension.additional-urls='[\
     {"title":"Overview","url":"https://calyptia.com/products/calyptia-core/"},\
     {"title":"Documentation","url":"https://docs.calyptia.com/"}, \
