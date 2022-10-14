@@ -34,9 +34,9 @@ export type CoreInstance = {
 }
 
 export enum CoreInstanceStatus {
-    waiting,
-    running,
-    unreachable,
+    waiting = "waiting",
+    running = "running",
+    unreachable = "unreachable",
 }
 
 export class Client {
