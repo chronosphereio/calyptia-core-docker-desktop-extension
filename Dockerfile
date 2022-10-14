@@ -18,15 +18,23 @@ FROM alpine
 # Technically some of these labels are "invalid" as they're reserved! https://docs.docker.com/config/labels-custom-metadata/
 # hadolint ignore=DL3048
 LABEL org.opencontainers.image.title="calyptia-core-docker-desktop" \
-    org.opencontainers.image.description="Calyptia Core Docker Docker Desktop Extension" \
+    org.opencontainers.image.description="Use Calyptia Core within Docker Desktop to manage observability." \
     org.opencontainers.image.vendor="Calyptia Inc." \
     com.docker.desktop.extension.api.version=">= 0.2.3" \
-    com.docker.extension.detailed-description="Automate integration with Calyptia Core to create an instance in your local Kubernetes cluster." \
+    com.docker.extension.detailed-description="This extension automates integration with Calyptia Core to create an instance in your local Docker Desktop Kubernetes cluster. \
+    It will allow you to use, evaluate and test Calyptia Core without needing to deploy or use a Kubernetes cluster. \
+    For full details and a demo please see https://calyptia.com/products/calyptia-core." \
     com.docker.extension.publisher-url="https://www.calyptia.com" \
-    com.docker.extension.changelog="Initial version, creation of core instance automatically" \
-    com.docker.desktop.extension.icon="" \
-    com.docker.extension.screenshots="" \
-    com.docker.extension.additional-urls=""
+    com.docker.extension.changelog="Integration with Calyptia Core UI and automated authentication." \
+    com.docker.desktop.extension.icon="https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/calyptia.svg" \
+    com.docker.extension.screenshots='[\
+    {"alt": "Main page", "url": "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/screenshots/login.png"},\
+    {"alt": "Existing core instance info", "url": "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/screenshots/existing-cluster.png"},\
+    {"alt": "Manage core instance with Calyptia", "url": "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/screenshots/manage-cluster.png}]' \
+    com.docker.extension.additional-urls='[\
+    {"title":"Overview","url":"https://calyptia.com/products/calyptia-core/"},\
+    {"title":"Documentation","url":"https://docs.calyptia.com/"}, \
+    {"title":"Support","url":"https://support.calyptia.com/"}]'
 
 # hadolint ignore=DL3018
 RUN apk add --no-cache curl
