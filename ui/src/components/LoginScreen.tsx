@@ -21,7 +21,6 @@ export default function LoginScreen(props: LoginScreenProps) {
             gridTemplateRows: "1fr auto",
             minHeight: "100vh",
             padding: "2rem",
-            background: "#f7f8fb",
         }}>
             <Box sx={{
                 display: "flex",

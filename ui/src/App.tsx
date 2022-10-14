@@ -1,8 +1,8 @@
 import { createTheme, ThemeProvider } from "@mui/material"
 import Container from "@mui/material/Container"
 import CssBaseline from "@mui/material/CssBaseline"
-import { Core } from "./calyptia/Core"
 import AuthGuard from "./components/AuthGuard"
+import CoreInstanceScreen from "./components/CoreInstanceScreen"
 import Header from "./components/Header"
 import { AuthClientProvider } from "./hooks/auth"
 import { DockerDesktopClientProvider } from "./hooks/docker-desktop"
@@ -11,6 +11,9 @@ import { ProjectTokenProvider } from "./hooks/project-token"
 const theme = createTheme({
     palette: {
         mode: "light",
+        background: {
+            default: "#f7f8fb"
+        }
     },
     typography: {
         fontFamily: "Rubik, sans-serif",
@@ -32,7 +35,8 @@ export function App() {
                             <Header />
                             <br />
                             <Container>
-                                <Core />
+                                <CoreInstanceScreen />
+                                {/* <Core /> */}
                             </Container>
                         </ProjectTokenProvider>
                     </AuthGuard>

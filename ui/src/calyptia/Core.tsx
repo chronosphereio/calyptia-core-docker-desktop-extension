@@ -5,8 +5,8 @@ import {
   Alert,
   Box,
   Button,
-  CircularProgress, 
-  Stack, 
+  CircularProgress,
+  Stack,
   Typography
 } from "@mui/material"
 import { blueGrey } from "@mui/material/colors"
@@ -143,7 +143,11 @@ export const Core = () => {
       "--kube-context",
       DockerDesktop
     ]
-    
+
+    if (process.env.REACT_APP_CLOUD_BASE_URL !== "https://cloud-api.calyptia.com") {
+      args.push("--cloud-url", process.env.REACT_APP_CLOUD_BASE_URL)
+    }
+
     let output = await hostCli(ddClient, "calyptia", args)
 
     if (output?.stderr) {
