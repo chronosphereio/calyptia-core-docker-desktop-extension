@@ -40,7 +40,6 @@ export function App() {
                                 <br />
                                 <Container>
                                     <CoreInstanceScreen />
-                                    {/* <Core /> */}
                                 </Container>
                             </ProjectTokenProvider>
                         </AuthGuard>
