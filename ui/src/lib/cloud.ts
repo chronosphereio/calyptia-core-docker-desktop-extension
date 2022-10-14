@@ -22,6 +22,23 @@ export type Token = {
     token: string
 }
 
+export type CoreInstance = {
+    id: string
+    name: string
+    version: string
+    status: CoreInstanceStatus
+    tags: string[]
+    metadata: Record<string, string>
+    createdAt: string
+    updatedAt: string
+}
+
+export enum CoreInstanceStatus {
+    waiting,
+    running,
+    unreachable,
+}
+
 export class Client {
     constructor(private baseURL: string, private tokenSource: ReuseTokenSource) { }
 
@@ -66,6 +83,20 @@ export class Client {
             }
         })
         const json = await handleResp<Token[]>(resp)
+        return new HTTPRespose(json, resp)
+    }
+
+    async fetchCoreInstance(signal: AbortSignal, instanceID) {
+        const u = new URL("/v1/aggregators/" + encodeURIComponent(instanceID), this.baseURL)
+        const tok = await this.tokenSource.token()
+        const resp = await fetch(u.toString(), {
+            signal,
+            method: "GET",
+            headers: {
+                Authorization: tok.tokenType + " " + tok.accessToken,
+            }
+        })
+        const json = await handleResp<CoreInstance>(resp)
         return new HTTPRespose(json, resp)
     }
 }

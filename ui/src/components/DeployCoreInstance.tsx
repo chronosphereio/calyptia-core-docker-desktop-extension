@@ -2,7 +2,6 @@ import AbcIcon from '@mui/icons-material/Abc'
 import LoadingButton from "@mui/lab/LoadingButton"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
-import Link from "@mui/material/Link"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import { useState } from "react"
@@ -62,18 +61,8 @@ export default function DeployCoreInstance() {
                     )}
                 </Box>
                 <Typography sx={{ color: "#0D3D61" }}>Need assistance?</Typography>
-                <Typography variant="caption" sx={{ color: "#0D3D61" }}>Just give us a ping <PingLink />.</Typography>
+                <Typography variant="caption" sx={{ color: "#0D3D61" }}>Just give us a ping at hello@calyptia.com.</Typography>
             </Stack>
         </StyledCard>
-    )
-}
-
-function PingLink() {
-    const dd = useDockerDesktopClient()
-
-    return (
-        <Link component="button" onClick={() => {
-            dd.host.openExternal("mailto:hello@calyptia.com")
-        }}>here</Link>
     )
 }
