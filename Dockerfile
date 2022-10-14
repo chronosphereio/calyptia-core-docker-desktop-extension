@@ -17,7 +17,7 @@ FROM alpine
 # https://docs.docker.com/desktop/extensions-sdk/extensions/labels/
 # Technically some of these labels are "invalid" as they're reserved! https://docs.docker.com/config/labels-custom-metadata/
 # hadolint ignore=DL3048
-LABEL org.opencontainers.image.title="calyptia-core-docker-desktop" \
+LABEL org.opencontainers.image.title="Calyptia Core" \
     org.opencontainers.image.description="Use Calyptia Core within Docker Desktop to manage observability." \
     org.opencontainers.image.vendor="Calyptia Inc." \
     com.docker.desktop.extension.api.version=">= 0.2.3" \
