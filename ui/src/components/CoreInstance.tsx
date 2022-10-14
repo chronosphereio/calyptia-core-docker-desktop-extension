@@ -9,7 +9,7 @@ import Grid from "@mui/material/Grid"
 import LinearProgress from "@mui/material/LinearProgress"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
-import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { useCloudClient } from "../hooks/cloud"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import birdDarkSrc from "../images/bird-dark.svg"
@@ -22,38 +22,25 @@ type Props = {
 
 export default function CoreInstance(props: Props) {
     const cloud = useCloudClient()
-    const [coreInstance, setCoreInstance] = useState<CoreInstanceType | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [err, setErr] = useState<Error | null>(null)
-
-    useEffect(() => {
-        const ctrl = new AbortController()
-
-        setErr(null)
-        setLoading(true)
-
-        cloud.fetchCoreInstance(ctrl.signal, props.instanceID).then(resp => {
-            setCoreInstance(resp.data)
-        }, setErr).finally(() => {
-            setLoading(false)
-        })
-
-        return () => {
-            ctrl.abort()
-        }
-    }, [props.instanceID])
+    const { isError, error: err, isLoading, data: coreInstance } = useQuery(
+        ["core_instance", props.instanceID],
+        ({ signal }) => cloud.fetchCoreInstance(signal, props.instanceID).then(resp => resp.data),
+        {
+            refetchInterval: 3000, // 3s
+        },
+    )
 
     return (
         <Box mb={10}>
             <StyledCard title={coreInstance?.name ?? props.instanceID} subheader={coreInstance?.id}>
-                {err !== null ? (
+                {isError ? (
                     <Alert iconMapping={{
                         error: <ErrorIcon fontSize="inherit" />,
                     }} severity="error" color="error">
                         <AlertTitle>Could not fetch core instance from Cloud</AlertTitle>
-                        {err.message}
+                        {(err as Error).message}
                     </Alert>
-                ) : loading ? (
+                ) : isLoading ? (
                     <LinearProgress />
                 ) : (
                     <CoreInstanceView coreInstance={coreInstance} />
