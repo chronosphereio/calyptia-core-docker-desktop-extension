@@ -43,23 +43,23 @@ RUN apk add --no-cache curl
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 RUN curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" \
     && chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl \
-    && curl -sSfL https://github.com/calyptia/cli/releases/download/v0.40.0/cli_0.40.0_linux_amd64.tar.gz | tar -xz \
+    && curl -sSfL https://github.com/calyptia/cli/releases/download/v0.41.1/cli_0.41.1_linux_amd64.tar.gz | tar -xz \
     && chmod +x ./calyptia && mv ./calyptia /usr/local/bin/calyptia \
     && mkdir -p /linux \
     && cp /usr/local/bin/kubectl /linux/ \
     && cp /usr/local/bin/calyptia /linux/
 
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/amd64/kubectl" \
-    && curl -sSfL https://github.com/calyptia/cli/releases/download/v0.40.0/cli_0.40.0_darwin_amd64.tar.gz | tar -xz \
+    && curl -sSfL https://github.com/calyptia/cli/releases/download/v0.41.1/cli_0.41.1_darwin_amd64.tar.gz | tar -xz \
     && mkdir -p /darwin \
     && chmod +x ./calyptia && mv ./calyptia /darwin/ \
     && chmod +x ./kubectl && mv ./kubectl /darwin/
 
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/windows/amd64/kubectl.exe" \
-    && curl -sSfL https://github.com/calyptia/cli/releases/download/v0.40.0/cli_0.40.0_windows_amd64.tar.gz | tar -xz \
+    && curl -sSfL https://github.com/calyptia/cli/releases/download/v0.41.1/cli_0.41.1_windows_amd64.tar.gz | tar -xz \
     && mkdir -p /windows \
     && chmod +x ./calyptia.exe && mv ./calyptia.exe /windows/ \
-    && chmod +x ./kubectl.exe && mv ./kubectl.exe /windows/ 
+    && chmod +x ./kubectl.exe && mv ./kubectl.exe /windows/
 
 WORKDIR /
 COPY LICENSE.txt .
