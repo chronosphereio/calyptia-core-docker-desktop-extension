@@ -86,7 +86,7 @@ export class Client {
         return new HTTPRespose(json, resp)
     }
 
-    async fetchCoreInstance(signal: AbortSignal, instanceID) {
+    async fetchCoreInstance(signal: AbortSignal, instanceID: string) {
         const u = new URL("/v1/aggregators/" + encodeURIComponent(instanceID), this.baseURL)
         const tok = await this.tokenSource.token()
         const resp = await fetch(u.toString(), {

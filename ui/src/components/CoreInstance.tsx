@@ -14,6 +14,7 @@ import { useCloudClient } from "../hooks/cloud"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import birdDarkSrc from "../images/bird-dark.svg"
 import { CoreInstance as CoreInstanceType, CoreInstanceStatus } from "../lib/cloud"
+import CoreInstanceMenu from "./CoreInstanceMenu"
 import StyledCard from "./StyledCard"
 
 type Props = {
@@ -22,6 +23,7 @@ type Props = {
 
 export default function CoreInstance(props: Props) {
     const cloud = useCloudClient()
+
     const { isError, error: err, isLoading, data: coreInstance } = useQuery(
         ["core_instance", props.instanceID],
         ({ signal }) => cloud.fetchCoreInstance(signal, props.instanceID).then(resp => resp.data),
@@ -32,7 +34,7 @@ export default function CoreInstance(props: Props) {
 
     return (
         <Box mb={10}>
-            <StyledCard title={coreInstance?.name ?? props.instanceID} subheader={coreInstance?.id}>
+            <StyledCard title={coreInstance?.name ?? props.instanceID} subheader={coreInstance?.id} action={<CoreInstanceMenu instanceID={coreInstance?.id!} />}>
                 {isError ? (
                     <Alert iconMapping={{
                         error: <ErrorIcon fontSize="inherit" />,
