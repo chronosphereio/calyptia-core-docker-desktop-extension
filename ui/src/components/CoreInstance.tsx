@@ -34,7 +34,9 @@ export default function CoreInstance(props: Props) {
 
     return (
         <Box mb={10}>
-            <StyledCard title={coreInstance?.name ?? props.instanceID} subheader={coreInstance?.id} action={<CoreInstanceMenu instanceID={coreInstance?.id!} />}>
+            <StyledCard title={coreInstance?.name ?? props.instanceID} subheader={coreInstance?.id} action={coreInstance !== undefined ? (
+                <CoreInstanceMenu instanceID={coreInstance.id} />
+            ) : undefined}>
                 {isError ? (
                     <Alert iconMapping={{
                         error: <ErrorIcon fontSize="inherit" />,
