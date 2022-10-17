@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:18.10.0-alpine3.16 AS client-builder
+FROM --platform=$BUILDPLATFORM node:18.11.0-alpine3.16 AS client-builder
 
 WORKDIR /ui
 # cache packages in layer
