@@ -66,7 +66,7 @@ function CoreInstanceView(props: CoreInstanceViewProps) {
                 <Grid item xs={6}>
                     <Box bgcolor="#FAFAFA" color="#0D3D61" p={2} borderRadius={1} border="1px solid rgba(63, 81, 181, 0.08)">
                         <Stack direction="row" justifyContent="space-between" alignItems="flex-end" pb={2}>
-                            <Typography variant="h6" fontWeight={700}>Core</Typography>
+                            <Typography variant="body1" fontWeight={500}>Core</Typography>
                             <CoreInstanceStatusChip status={props.coreInstance.status} />
                         </Stack>
                         <Divider />
@@ -90,8 +90,8 @@ function CoreInstanceView(props: CoreInstanceViewProps) {
                 </Grid>
 
                 <Grid item xs={6}>
-                    <Box bgcolor="#FAFAFA" color="#0D3D61" p={2} borderRadius={1} border="1px solid rgba(63, 81, 181, 0.08)">
-                        <Typography variant="h6" fontWeight={700} pb={2}>Kubernetes</Typography>
+                    <Box bgcolor="#FAFAFA" color="#0D3D61" p={2} borderRadius={1} border="1px solid rgba(63, 81, 181, 0.08)" height="100%">
+                        <Typography variant="body1" fontWeight={500} pb={2} pt={1}>Kubernetes</Typography>
                         <Divider />
                         <Box display="grid" gridTemplateColumns="auto 1fr" gridTemplateRows="auto" mt={2} gap={2}>
                             <Typography sx={{ opacity: 0.7 }}>Cluster Name</Typography>
