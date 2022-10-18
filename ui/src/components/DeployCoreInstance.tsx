@@ -24,6 +24,7 @@ export default function DeployCoreInstance() {
             "core_instance",
             "kubernetes",
             "--token", projectToken.token,
+            "--tags", "dockerdesktop",
             "--kube-context", "docker-desktop"
         ]
 
