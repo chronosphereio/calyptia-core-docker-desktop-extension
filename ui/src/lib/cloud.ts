@@ -39,6 +39,15 @@ export enum CoreInstanceStatus {
     unreachable = "unreachable",
 }
 
+export type UpdateCoreInstanceOpts = {
+    instanceID: string
+    payload: UpdateCoreInstancePayload
+}
+
+export type UpdateCoreInstancePayload = {
+    tags?: string[] | null
+}
+
 export class Client {
     constructor(private baseURL: string, private tokenSource: ReuseTokenSource) { }
 
@@ -97,6 +106,21 @@ export class Client {
             }
         })
         const json = await handleResp<CoreInstance>(resp)
+        return new HTTPRespose(json, resp)
+    }
+
+    async updateCoreInstance(signal: AbortSignal, opts: UpdateCoreInstanceOpts) {
+        const u = new URL("/v1/aggregators/" + encodeURIComponent(opts.instanceID), this.baseURL)
+        const tok = await this.tokenSource.token()
+        const resp = await fetch(u.toString(), {
+            signal,
+            method: "PATCH",
+            headers: {
+                Authorization: tok.tokenType + " " + tok.accessToken,
+            },
+            body: JSON.stringify(opts.payload),
+        })
+        const json = await handleResp<void>(resp)
         return new HTTPRespose(json, resp)
     }
 }

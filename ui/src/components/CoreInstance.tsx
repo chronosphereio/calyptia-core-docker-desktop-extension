@@ -10,6 +10,7 @@ import LinearProgress from "@mui/material/LinearProgress"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import { useQuery } from "@tanstack/react-query"
+import { useEffect } from "react"
 import { useCloudClient } from "../hooks/cloud"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import birdDarkSrc from "../images/bird-dark.svg"
@@ -31,6 +32,29 @@ export default function CoreInstance(props: Props) {
             refetchInterval: 3000, // 3s
         },
     )
+
+    // Make sure the instance has "docker-desktop" tag.
+    useEffect(() => {
+        if (coreInstance === undefined) {
+            return
+        }
+
+        const tag = "dockerdesktop"
+        if (Array.isArray(coreInstance.tags) && coreInstance.tags.includes(tag)) {
+            return
+        }
+
+        const ctrl = new AbortController()
+        cloud.updateCoreInstance(ctrl.signal, {
+            instanceID: coreInstance.id,
+            payload: {
+                tags: [tag],
+            },
+        }).catch(console.error)
+        return () => {
+            ctrl.abort()
+        }
+    }, [coreInstance])
 
     return (
         <Box mb={10}>
@@ -80,7 +104,7 @@ function CoreInstanceView(props: CoreInstanceViewProps) {
                             {Array.isArray(props.coreInstance.tags) && props.coreInstance.tags.length !== 0 ? (
                                 <>
                                     <Typography sx={{ opacity: 0.7 }}>Tags</Typography>
-                                    <Stack>{props.coreInstance.tags.map(tag => (
+                                    <Stack alignItems="flex-start">{props.coreInstance.tags.map(tag => (
                                         <Chip key={tag} label={tag} />
                                     ))}</Stack>
                                 </>
