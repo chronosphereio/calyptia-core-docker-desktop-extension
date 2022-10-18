@@ -80,7 +80,7 @@ function CoreInstanceView(props: CoreInstanceViewProps) {
                             {Array.isArray(props.coreInstance.tags) && props.coreInstance.tags.length !== 0 ? (
                                 <>
                                     <Typography sx={{ opacity: 0.7 }}>Tags</Typography>
-                                    <Stack>{props.coreInstance.tags.map(tag => (
+                                    <Stack alignItems="flex-start">{props.coreInstance.tags.map(tag => (
                                         <Chip key={tag} label={tag} />
                                     ))}</Stack>
                                 </>
