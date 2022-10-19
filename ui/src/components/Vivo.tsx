@@ -107,7 +107,7 @@ function FluentBitData({ limit, connection }: FluentBitDataProps) {
                 <Stack direction="row" alignItems="center" gap={1}>
                   <Box>
                     <Stack direction="row" gap={1} alignItems="center">
-                      <Typography color="#7B61FF">{new Date(Number(record.data.date) * 1000).toLocaleDateString()}</Typography>
+                      <Typography color="#7B61FF">{new Date(Number(record.data.date) * 1000).toLocaleString()}</Typography>
                       <IconButton onClick={() => onFold(record.id)}>
                         {fold ? (
                           <UnfoldMore sx={{ color: "#7B61FF" }} />
