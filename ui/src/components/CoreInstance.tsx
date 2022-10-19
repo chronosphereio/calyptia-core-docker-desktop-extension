@@ -70,8 +70,7 @@ export default function CoreInstance(props: Props) {
                         All your events in only one space
                     </Typography>
                 </div>
-                <Button sx={{ paddingLeft: "3rem", paddingRight: "3rem", backgroundColor: "#1669AA", color: "#FFFFFF" }}
-                    onClick={() => setViewData(true)}>View now</Button>
+                <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => setViewData(true)}>View now</Button>
             </Card>
         </Box>
     )
