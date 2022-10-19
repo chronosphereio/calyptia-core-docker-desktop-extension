@@ -1,9 +1,9 @@
 import ErrorIcon from "@mui/icons-material/Error"
-import Card from "@mui/material/Card"
 import Alert from "@mui/material/Alert"
 import AlertTitle from "@mui/material/AlertTitle"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
 import Chip, { ChipTypeMap } from "@mui/material/Chip"
 import Divider from "@mui/material/Divider"
 import Grid from "@mui/material/Grid"
@@ -38,9 +38,9 @@ export default function CoreInstance(props: Props) {
     )
 
     if (viewData) {
-      return (
-        <Vivo setViewData={setViewData} />
-      )
+        return (
+            <Vivo setViewData={setViewData} />
+        )
     }
 
     return (
@@ -61,17 +61,17 @@ export default function CoreInstance(props: Props) {
                     <CoreInstanceView coreInstance={coreInstance} />
                 )}
             </StyledCard>
-            <Card sx={{display: "flex", justifyContent: "space-between", marginTop: "1rem", padding: "1rem"}}>
-              <div>
-              <Typography color="#0D3D61" variant="body1" fontWeight={500}>
-                Check your live data on our Vivo Space
-              </Typography>
-              <Typography color="#0D3D61" variant="body1">
-                All your events in only one space
-              </Typography>
-              </div>
-              <Button sx={{ paddingLeft: "3rem", paddingRight: "3rem", backgroundColor: "#1669AA", color: "#FFFFFF" }}
-              onClick={() => setViewData(true)}>View now</Button>
+            <Card sx={{ display: "flex", justifyContent: "space-between", marginTop: "1rem", padding: "1rem" }}>
+                <div>
+                    <Typography color="#0D3D61" variant="body1" fontWeight={500}>
+                        Check your live data on our Vivo Space
+                    </Typography>
+                    <Typography color="#0D3D61" variant="body1">
+                        All your events in only one space
+                    </Typography>
+                </div>
+                <Button sx={{ paddingLeft: "3rem", paddingRight: "3rem", backgroundColor: "#1669AA", color: "#FFFFFF" }}
+                    onClick={() => setViewData(true)}>View now</Button>
             </Card>
         </Box>
     )
@@ -143,7 +143,8 @@ function ManageCoreBtn(props: ManageCoreBtnProps) {
 
     return (
         <Button startIcon={<img src={birdDarkSrc} alt="Calyptia bird" />} variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => {
-            dd.host.openExternal("https://core.calyptia.com/" + encodeURIComponent(props.instanceID))
+            const host = process.env.REACT_APP_CLOUD_BASE_URL !== "https://cloud-api.calyptia.com" ? "core-next.calyptia.com" : "core.calyptia.com"
+            dd.host.openExternal(`https://${host}/${encodeURIComponent(props.instanceID)}`)
         }}>Manage Core</Button>
     )
 }

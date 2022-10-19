@@ -19,12 +19,11 @@
     "react-scripts": "5.0.0"
   },
   "scripts": {
-    "start": "REACT_APP_CLOUD_BASE_URL=http://localhost:3000 react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "https://cloud-api.calyptia.com",
   "eslintConfig": {
     "extends": [
       "react-app",
