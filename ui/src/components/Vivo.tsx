@@ -3,11 +3,10 @@ import UnfoldMore from "@mui/icons-material/UnfoldMore"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import IconButton from "@mui/material/IconButton"
-import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   vivoConnection,
@@ -69,6 +68,7 @@ function limitRecords(d: VivoStdoutEventData[], max: number): VivoStdoutEventDat
 
 function FluentBitData({ limit, connection }: FluentBitDataProps) {
   const [records, setRecords] = useState([] as VivoStdoutEventData[])
+  const ref = useChatScroll(records)
   const [foldMap, setFoldMap] = useState({})
 
   useEffect(() => {
@@ -98,7 +98,7 @@ function FluentBitData({ limit, connection }: FluentBitDataProps) {
 
   return (
     <Box p={2} bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1}>
-      <List sx={{ flexDirection: "column-reverse", maxHeight: "60vh", overflowY: "auto" }}>
+      <ul style={{ display: "flex", flexDirection: "column-reverse", maxHeight: "60vh", overflowY: "auto" }} ref={ref}>
         {records.map(record => {
           const fold = Object.entries(foldMap).some(([k, v]) => k === record.id && v)
           return (
@@ -123,8 +123,17 @@ function FluentBitData({ limit, connection }: FluentBitDataProps) {
             </ListItem>
           )
         })}
-      </List>
-
+      </ul>
     </Box>
   )
+}
+
+function useChatScroll<T>(dep: T) {
+  const ref = useRef<HTMLUListElement>()
+  useEffect(() => {
+    if (ref.current instanceof HTMLUListElement) {
+      ref.current.scrollTop = ref.current.scrollHeight
+    }
+  }, [dep])
+  return ref
 }
