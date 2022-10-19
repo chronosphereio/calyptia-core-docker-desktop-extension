@@ -29,6 +29,15 @@ function exampleCurlCommand(port: number) {
 
 export default function Vivo({ connection, records, setViewData }: VivoProps) {
   const [currentPort, setCurrentPort] = useState(connection.currentPort())
+  const [pausedRecords, setPausedRecords] = useState<VivoStdoutEventData[] | null>(null);
+
+  function togglePause() {
+    if (pausedRecords) {
+      setPausedRecords(null);
+    } else {
+      setPausedRecords(records.slice());
+    }
+  }
 
   useEffect(() => {
     connection.on('port-changed', setCurrentPort)
@@ -40,7 +49,10 @@ export default function Vivo({ connection, records, setViewData }: VivoProps) {
 
   return (
     <div>
-      <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => setViewData(false)}>Go back</Button>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => setViewData(false)}>Go back</Button>
+        <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={togglePause}>{ pausedRecords ? "Continue" : "Pause" }</Button>
+      </div>
 
       {currentPort !== null ? <>
         <p>Sample commands to post data:</p>
@@ -48,7 +60,7 @@ export default function Vivo({ connection, records, setViewData }: VivoProps) {
         <pre>{exampleCurlCommand(currentPort)}</pre>
       </> : null}
 
-      <FluentBitData connection={connection} records={records} />
+      <FluentBitData connection={connection} records={pausedRecords ? pausedRecords : records} />
     </div>
   )
 }
