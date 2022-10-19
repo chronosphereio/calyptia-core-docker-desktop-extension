@@ -41,15 +41,12 @@ export default function DeleteCoreInstance(props: Props) {
         }
 
         const args = [
-            "delete", "--ignore-not-found",
-            "--kube-context", "docker-desktop",
-            "-f", "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/vivo-k8s.yaml"
+            "delete", 
+            "deployments,services,pods", 
+            "-l", "app.kubernetes.io/name=vivo",
+            "--context", "docker-desktop",
         ]
-
-        const output = await dd.extension.host.cli.exec("kubectl", args)
-        if (output.stderr !== "") {
-            throw new Error(output.stderr)
-        }
+        await dd.extension.host.cli.exec("kubectl", args)
     }
 
     const deleteCoreInstance = async () => {
