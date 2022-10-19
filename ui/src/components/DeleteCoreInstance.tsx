@@ -35,18 +35,21 @@ export default function DeleteCoreInstance(props: Props) {
         }
     }
 
-    const deleteVivo = async() => {
+    const deleteVivo = async () => {
         if (dd.extension.host === undefined) {
             throw new Error("docker-desktop extension host not enabled")
         }
 
         const args = [
-            "delete", 
-            "deployments,services,pods", 
+            "delete",
+            "deployments,services,pods",
             "-l", "app.kubernetes.io/name=vivo",
             "--context", "docker-desktop",
         ]
-        await dd.extension.host.cli.exec("kubectl", args)
+        const output = await dd.extension.host.cli.exec("kubectl", args)
+        if (output.stderr !== "") {
+            throw new Error(output.stderr)
+        }
     }
 
     const deleteCoreInstance = async () => {
