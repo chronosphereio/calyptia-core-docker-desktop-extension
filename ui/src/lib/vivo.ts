@@ -43,6 +43,7 @@ export interface VivoConnection {
   off(event: 'error', listener: VivoErrorEventListener): this
   off(event: 'port-changed', listener: VivoPortChangedEventListener): this
   close(): void
+  currentPort(): number
 }
 
 let connectionId = 1
@@ -80,6 +81,7 @@ export function vivoConnection(): VivoConnection {
   let connId = connectionId++
   let firstMessage = true
   let timer: ReturnType<typeof setTimeout>
+  let currentPort: number
 
 
   function reset() {
@@ -95,6 +97,7 @@ export function vivoConnection(): VivoConnection {
 
   async function init() {
     const port = await getVivoPort()
+    currentPort = port;
     emitter.emit('port-changed', port)
     const url = `ws://localhost:${port}/flb`
     socket = new WebSocket(url)
@@ -155,6 +158,10 @@ export function vivoConnection(): VivoConnection {
       if (socket && socket.readyState !== 3) {
         socket.close()
       }
+    },
+
+    currentPort() {
+      return currentPort
     }
   }
 

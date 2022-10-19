@@ -10,85 +10,68 @@ import Typography from "@mui/material/Typography"
 import { useEffect, useState } from 'react'
 
 import {
-  vivoConnection,
-  VivoConnection, VivoErrorEventListener, VivoStdoutEventData,
-  VivoStdoutEventListener
+  VivoConnection, VivoStdoutEventData,
 } from '../lib/vivo'
 
 interface VivoProps {
+  connection: VivoConnection
+  records: VivoStdoutEventData[]
   setViewData: (val: boolean) => void
 }
 
-export default function Vivo({ setViewData }: VivoProps) {
-  const [connection, setConnection] = useState<VivoConnection | null>(null)
-  const [currentPort, setCurrentPort] = useState<number | null>(null)
+function exampleFluentBitCommand(port: number) {
+  return `fluent-bit -i dummy -o http -pformat=json -phost=localhost -pport=${port} -puri=/console -ptls=off`
+}
+
+function exampleCurlCommand(port: number) {
+  return `curl -H 'Content-Type: application/json' -d '[{"log": "line 1"},{"log":"line 2"}]' http://localhost:${port}/console`
+}
+
+export default function Vivo({ connection, records, setViewData }: VivoProps) {
+  const [currentPort, setCurrentPort] = useState(connection.currentPort())
+  const [pausedRecords, setPausedRecords] = useState<VivoStdoutEventData[] | null>(null);
+
+  function togglePause() {
+    if (pausedRecords) {
+      setPausedRecords(null);
+    } else {
+      setPausedRecords(records.slice());
+    }
+  }
 
   useEffect(() => {
-    const conn = vivoConnection()
-
-    conn.on('port-changed', setCurrentPort)
-
-    setConnection(conn)
+    connection.on('port-changed', setCurrentPort)
 
     return () => {
-      conn.off('port-changed', setCurrentPort)
-      conn.close()
+      connection.off('port-changed', setCurrentPort)
     }
   }, [])
 
   return (
     <div>
-      <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => setViewData(false)}>Go back</Button>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => setViewData(false)}>Go back</Button>
+        <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={togglePause}>{ pausedRecords ? "Continue" : "Pause" }</Button>
+      </div>
 
       {currentPort !== null ? <>
-        <p>Sample fluent-bit command:</p>
-        <pre>fluent-bit -i cpu -o http -pformat=json -phost=localhost -pport={currentPort} -puri=/console -ptls=off</pre>
+        <p>Sample commands to post data:</p>
+        <pre>{exampleFluentBitCommand(currentPort)}</pre>
+        <pre>{exampleCurlCommand(currentPort)}</pre>
       </> : null}
 
-      {connection !== null ? (
-        <>
-          <FluentBitData connection={connection} limit={100} />
-        </>
-      ) : null}
+      <FluentBitData connection={connection} records={pausedRecords ? pausedRecords : records} />
     </div>
   )
 }
 
 interface FluentBitDataProps {
   connection: VivoConnection
-  limit: number
+  records: VivoStdoutEventData[]
 }
 
-function limitRecords(d: VivoStdoutEventData[], max: number): VivoStdoutEventData[] {
-  const delta = d.length - max
-  if (delta > 0) {
-    return d.slice(delta)
-  }
-  return d
-}
-
-function FluentBitData({ limit, connection }: FluentBitDataProps) {
-  const [records, setRecords] = useState([] as VivoStdoutEventData[])
+function FluentBitData({ records, connection }: FluentBitDataProps) {
   const [foldMap, setFoldMap] = useState({})
-
-  useEffect(() => {
-    const stdoutListener: VivoStdoutEventListener = (data) => {
-      setRecords(r => limitRecords(r.concat(data), limit))
-    }
-
-    const errorListener: VivoErrorEventListener = (data) => {
-      console.error('Failed to parse stdout JSON:', data.message)
-      console.error('Raw payload:', data.raw)
-    }
-
-    connection.on('stdout', stdoutListener)
-    connection.on('error', errorListener)
-
-    return () => {
-      connection.off('stdout', stdoutListener)
-      connection.off('error', errorListener)
-    }
-  }, [connection, limit])
 
   const onFold = id => {
     setFoldMap(m => ({ ...m, [id]: !m[id] }))

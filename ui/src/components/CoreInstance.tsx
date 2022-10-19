@@ -11,7 +11,7 @@ import LinearProgress from "@mui/material/LinearProgress"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import { useQuery } from "@tanstack/react-query"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCloudClient } from "../hooks/cloud"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import birdDarkSrc from "../images/bird-dark.svg"
@@ -19,15 +19,53 @@ import { CoreInstance as CoreInstanceType, CoreInstanceStatus } from "../lib/clo
 import CoreInstanceMenu from "./CoreInstanceMenu"
 import StyledCard from "./StyledCard"
 import Vivo from "./Vivo"
+import {
+  vivoConnection,
+  VivoConnection, VivoErrorEventListener, VivoStdoutEventData,
+  VivoStdoutEventListener
+} from '../lib/vivo'
 
 type Props = {
     instanceID: string
+}
+
+
+function limitRecords(d: VivoStdoutEventData[], max: number): VivoStdoutEventData[] {
+  const delta = d.length - max
+  if (delta > 0) {
+    return d.slice(delta)
+  }
+  return d
 }
 
 export default function CoreInstance(props: Props) {
     const [viewData, setViewData] = useState(false)
 
     const cloud = useCloudClient()
+    const [connection, setConnection] = useState<VivoConnection | null>(null)
+    const [records, setRecords] = useState([] as VivoStdoutEventData[])
+
+    const stdoutListener: VivoStdoutEventListener = (data) => {
+      setRecords(r => limitRecords(r.concat(data), 100))
+    }
+
+    const errorListener: VivoErrorEventListener = (data) => {
+      console.error('Failed to parse stdout JSON:', data.message)
+      console.error('Raw payload:', data.raw)
+    }
+
+    useEffect(() => {
+      const conn = vivoConnection()
+      setConnection(conn)
+
+      conn.on('stdout', stdoutListener)
+      conn.on('error', errorListener)
+      return () => {
+        conn.off('stdout', stdoutListener)
+        conn.off('error', errorListener)
+        conn.close();
+      }
+    }, []);
 
     const { isError, error: err, isLoading, data: coreInstance } = useQuery(
         ["core_instance", props.instanceID],
@@ -37,9 +75,9 @@ export default function CoreInstance(props: Props) {
         },
     )
 
-    if (viewData) {
+    if (viewData && connection) {
         return (
-            <Vivo setViewData={setViewData} />
+            <Vivo records={records} connection={connection} setViewData={setViewData} />
         )
     }
 
