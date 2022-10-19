@@ -8,7 +8,6 @@ import ListItem from "@mui/material/ListItem"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import { useEffect, useState } from 'react'
-import { useDockerDesktopClient } from "../hooks/docker-desktop"
 
 import {
   vivoConnection,
@@ -21,23 +20,19 @@ interface VivoProps {
 }
 
 export default function Vivo({ setViewData }: VivoProps) {
-  const dd = useDockerDesktopClient()
-  const [connection, setConnection] = useState<VivoConnection | null>(null)
+  const [connection, setConnection] = useState<VivoConnection>()
+  const [currentPort, setCurrentPort] = useState<number>()
 
   useEffect(() => {
-    loadVivoPort().then(port => {
-      console.log({ port })
-      const conn = vivoConnection(port, 'http')
-      setConnection(conn)
-    }, (err: Error) => {
-      console.error(err)
-      dd.desktopUI.toast.error(err.message)
-    })
+    const conn = vivoConnection()
+
+    conn.on('port-changed', setCurrentPort)
+
+    setConnection(conn)
 
     return () => {
-      if (connection !== null) {
-        connection.close()
-      }
+      conn.off('port-changed', setCurrentPort)
+      conn.close()
     }
   }, [])
 
@@ -60,8 +55,10 @@ export default function Vivo({ setViewData }: VivoProps) {
     <div>
       <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => setViewData(false)}>Go back</Button>
 
-      <p>Sample fluent-bit command:</p>
-      <pre>fluent-bit -i cpu -o http -pformat=json -phost=calyptia-vivo -pport=5489 -puri=/console -ptls=off</pre>
+      {currentPort ? <>
+        <p>Sample fluent-bit command:</p>
+        <pre>fluent-bit -i cpu -o http -pformat=json -phost=localhost -pport={currentPort} -puri=/console -ptls=off</pre>
+      </> : null}
 
       {connection !== null ? (
         <>
