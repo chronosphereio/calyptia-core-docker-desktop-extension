@@ -101,7 +101,7 @@ function FluentBitData({ limit, connection }: FluentBitDataProps) {
           const fold = Object.entries(foldMap).some(([k, v]) => k === record.id && v)
           return (
             <ListItem key={record.id}>
-              <Box borderLeft="3px solid #7B61FF" borderRadius="3px" bgcolor="white" width="100%" px={2} py={0}>
+              <Box borderLeft="3px solid #7B61FF" borderRadius="3px" bgcolor={fold ? "#F1F0F9" : "white"} width="100%" px={2} py={0}>
                 <Stack direction="row" alignItems="center" gap={1}>
                   <Box>
                     <Stack direction="row" gap={1} alignItems="center">
