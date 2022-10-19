@@ -22,7 +22,7 @@ export default function DeployCoreInstance() {
         const args = [
             "apply",
             "--context", "docker-desktop",
-            "-f", "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/vivo-k8s.yaml"
+            "-f", "https://raw.githubusercontent.com/calyptia/vivo/master/vivo.yaml"
         ]
 
         const output = await dd.extension.host.cli.exec("kubectl", args)
