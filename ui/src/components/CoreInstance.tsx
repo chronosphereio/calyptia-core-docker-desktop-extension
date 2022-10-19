@@ -1,4 +1,5 @@
 import ErrorIcon from "@mui/icons-material/Error"
+import Card from "@mui/material/Card"
 import Alert from "@mui/material/Alert"
 import AlertTitle from "@mui/material/AlertTitle"
 import Box from "@mui/material/Box"
@@ -10,18 +11,22 @@ import LinearProgress from "@mui/material/LinearProgress"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import { useQuery } from "@tanstack/react-query"
+import { useState } from 'react'
 import { useCloudClient } from "../hooks/cloud"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import birdDarkSrc from "../images/bird-dark.svg"
 import { CoreInstance as CoreInstanceType, CoreInstanceStatus } from "../lib/cloud"
 import CoreInstanceMenu from "./CoreInstanceMenu"
 import StyledCard from "./StyledCard"
+import Vivo from "./Vivo"
 
 type Props = {
     instanceID: string
 }
 
 export default function CoreInstance(props: Props) {
+    const [viewData, setViewData] = useState(false)
+
     const cloud = useCloudClient()
 
     const { isError, error: err, isLoading, data: coreInstance } = useQuery(
@@ -31,6 +36,12 @@ export default function CoreInstance(props: Props) {
             refetchInterval: 3000, // 3s
         },
     )
+
+    if (viewData) {
+      return (
+        <Vivo setViewData={setViewData} />
+      )
+    }
 
     return (
         <Box mb={10}>
@@ -50,6 +61,18 @@ export default function CoreInstance(props: Props) {
                     <CoreInstanceView coreInstance={coreInstance} />
                 )}
             </StyledCard>
+            <Card sx={{display: "flex", justifyContent: "space-between", marginTop: "1rem", padding: "1rem"}}>
+              <div>
+              <Typography color="#0D3D61" variant="body1" fontWeight={500}>
+                Check your live data on our Vivo Space
+              </Typography>
+              <Typography color="#0D3D61" variant="body1">
+                All your events in only one space
+              </Typography>
+              </div>
+              <Button sx={{ paddingLeft: "3rem", paddingRight: "3rem", backgroundColor: "#1669AA", color: "#FFFFFF" }}
+              onClick={() => setViewData(true)}>View now</Button>
+            </Card>
         </Box>
     )
 }
