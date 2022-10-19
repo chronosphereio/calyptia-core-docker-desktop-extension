@@ -15,15 +15,17 @@ interface VivoProps {
 
 export default function Vivo({ setViewData }: VivoProps) {
   const [connection, setConnection] = useState<VivoConnection>();
-  const [token, setToken] = useState('')
+  const [currentPort, setCurrentPort] = useState<number>();
 
   useEffect(() => {
-    const conn = vivoConnection(5489, 'http')
+    const conn = vivoConnection()
+
+    conn.on('port-changed', setCurrentPort);
+
     setConnection(conn)
-    conn.once('token-received', tok => {
-      setToken(tok);
-    })
+
     return () => {
+      conn.off('port-changed', setCurrentPort);
       conn.close();
     }
   }, []);
@@ -32,8 +34,10 @@ export default function Vivo({ setViewData }: VivoProps) {
     <div>
     <Button sx={{ paddingLeft: "3rem", paddingRight: "3rem", backgroundColor: "#1669AA", color: "#FFFFFF" }} onClick={() => setViewData(false)}>Go back</Button>
 
+    {currentPort ? <>
     <p>Sample fluent-bit command:</p>
-    <pre>fluent-bit -i cpu -o http -pformat=json -phost=localhost -pport=5489 -puri=/console -ptls=off</pre>
+    <pre>fluent-bit -i cpu -o http -pformat=json -phost=localhost -pport={currentPort} -puri=/console -ptls=off</pre>
+    </> : null}
 
     {connection ? (
       <>

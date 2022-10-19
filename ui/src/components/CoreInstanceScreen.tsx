@@ -17,26 +17,6 @@ function CoreInstanceDeploymentLoader() {
     const dd = useDockerDesktopClient()
     const [loading, setLoading] = useState(true)
     const [coreInstanceID, setCoreInstanceID] = useState<string | null>(null)
-    const [vivoPort, setVivoPort] = useState<string | null>(null)
-
-    const loadVivoPort = async() => {
-        try {
-            // Get the NodePort value for the HTTP port of the service
-            const output = await dd.extension.host.cli.exec("kubectl", [
-                "get",
-                "service/calyptia-vivo",
-                "--output=jsonpath={.spec.ports[?(@.name==\"http\")].nodePort}",
-                "--context", "docker-desktop",
-            ])
-            if (output.stderr !== "") {
-                throw new Error(output.stderr)
-            }
-
-            return output.stdout
-        } catch (err) {
-            return null
-        }
-    }
 
     const loadCoreInstanceID = async () => {
         try {
