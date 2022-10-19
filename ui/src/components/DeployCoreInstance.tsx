@@ -14,6 +14,23 @@ export default function DeployCoreInstance() {
     const projectToken = useProjectToken()
     const [loading, setLoading] = useState(false)
 
+    const deployVivo = async () => {
+        if (dd.extension.host === undefined) {
+            throw new Error("docker-desktop extension host not enabled")
+        }
+
+        const args = [
+            "apply",
+            "--context", "docker-desktop",
+            "-f", "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/vivo-k8s.yaml"
+        ]
+
+        const output = await dd.extension.host.cli.exec("kubectl", args)
+        if (output.stderr !== "") {
+            throw new Error(output.stderr)
+        }
+    }
+
     const deployCoreInstance = async () => {
         if (dd.extension.host === undefined) {
             throw new Error("docker-desktop extension host not enabled")
@@ -36,6 +53,9 @@ export default function DeployCoreInstance() {
         if (output.stderr !== "") {
             throw new Error(output.stderr)
         }
+        
+        // Assumption is we deploy/delete Vivo with Core - no extra handling, any issues then delete and re-deploy
+        await deployVivo()
     }
 
     const onDeploy = () => {

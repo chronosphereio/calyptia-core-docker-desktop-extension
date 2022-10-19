@@ -35,6 +35,23 @@ export default function DeleteCoreInstance(props: Props) {
         }
     }
 
+    const deleteVivo = async() => {
+        if (dd.extension.host === undefined) {
+            throw new Error("docker-desktop extension host not enabled")
+        }
+
+        const args = [
+            "delete", "--ignore-not-found",
+            "--kube-context", "docker-desktop",
+            "-f", "https://storage.googleapis.com/calyptia_public_resources_bucket/docker-desktop/vivo-k8s.yaml"
+        ]
+
+        const output = await dd.extension.host.cli.exec("kubectl", args)
+        if (output.stderr !== "") {
+            throw new Error(output.stderr)
+        }
+    }
+
     const deleteCoreInstance = async () => {
         if (dd.extension.host === undefined) {
             throw new Error("docker-desktop extension host not enabled")
@@ -58,6 +75,8 @@ export default function DeleteCoreInstance(props: Props) {
         if (output.stderr !== "") {
             throw new Error(output.stderr)
         }
+
+        await deleteVivo()
     }
 
     return (
