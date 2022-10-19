@@ -98,7 +98,7 @@ function FluentBitData({ limit, connection }: FluentBitDataProps) {
 
   return (
     <Box p={2} bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1}>
-      <List>
+      <List sx={{ flexDirection: "column-reverse", maxHeight: "60vh", overflowY: "auto" }}>
         {records.map(record => {
           const fold = Object.entries(foldMap).some(([k, v]) => k === record.id && v)
           return (
