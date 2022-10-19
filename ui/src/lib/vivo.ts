@@ -110,7 +110,6 @@ export function vivoConnection(): VivoConnection {
 
     socket.onmessage = function (event) {
       const eventData = JSON.parse(event.data)
-      console.log(eventData)
       if (firstMessage) {
         firstMessage = false
         return

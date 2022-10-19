@@ -94,11 +94,9 @@ function FluentBitData({ limit, connection }: FluentBitDataProps) {
     setFoldMap(m => ({ ...m, [id]: !m[id] }))
   }
 
-  console.log({ records })
-
   return (
     <Box p={2} bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1}>
-      <ul style={{ display: "flex", flexDirection: "column-reverse", maxHeight: "60vh", overflowY: "auto" }} ref={ref}>
+      <ul style={{ display: "flex", flexDirection: "column", maxHeight: "60vh", overflowY: "auto" }} ref={ref}>
         {records.map(record => {
           const fold = Object.entries(foldMap).some(([k, v]) => k === record.id && v)
           return (
@@ -132,7 +130,7 @@ function useChatScroll<T>(dep: T) {
   const ref = useRef<HTMLUListElement>()
   useEffect(() => {
     if (ref.current instanceof HTMLUListElement) {
-      ref.current.scrollTop = ref.current.scrollHeight
+      ref.current.scrollTop = 0
     }
   }, [dep])
   return ref
