@@ -55,7 +55,7 @@ async function getVivoPort(): Promise<number> {
       const output = await dd.extension.host.cli.exec("kubectl", [
         "get",
         "service/calyptia-vivo",
-        "--output=jsonpath={.spec.ports[?\\(@.name==\\\"http\\\"\\)].nodePort}",
+        "--output=jsonpath='{.spec.ports[?\\(@.name==\\\"http\\\"\\)].nodePort}'",
         "--context", "docker-desktop",
       ])
       if (output.stderr !== "") {

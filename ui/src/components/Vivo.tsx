@@ -20,7 +20,7 @@ interface VivoProps {
 }
 
 export default function Vivo({ setViewData }: VivoProps) {
-  const [connection, setConnection] = useState<VivoConnection>()
+  const [connection, setConnection] = useState<VivoConnection>(null)
   const [currentPort, setCurrentPort] = useState<number>()
 
   useEffect(() => {
@@ -35,21 +35,6 @@ export default function Vivo({ setViewData }: VivoProps) {
       conn.close()
     }
   }, [])
-
-  const loadVivoPort = async () => {
-    // Get the NodePort value for the HTTP port of the service
-    const output = await dd.extension.host.cli.exec("kubectl", [
-      "get",
-      "service/calyptia-vivo",
-      "--output='jsonpath={.spec.ports[?(@.name==\"http\")].nodePort}'",
-      "--context", "docker-desktop",
-    ])
-    if (output.stderr !== "") {
-      throw new Error(output.stderr)
-    }
-
-    return Number(output.stdout)
-  }
 
   return (
     <div>
@@ -72,14 +57,6 @@ export default function Vivo({ setViewData }: VivoProps) {
 interface FluentBitDataProps {
   connection: VivoConnection
   limit: number
-}
-
-function reverseMap<T>(array: VivoStdoutEventData[], fn: (r: VivoStdoutEventData) => T) {
-  const rv = []
-  for (let i = array.length - 1; i >= 0; i--) {
-    rv.push(fn(array[i]))
-  }
-  return rv
 }
 
 function limitRecords(d: VivoStdoutEventData[], max: number): VivoStdoutEventData[] {
