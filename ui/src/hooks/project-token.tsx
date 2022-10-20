@@ -39,6 +39,7 @@ export function ProjectTokenProvider(props: PropsWithChildren<unknown>) {
             }
 
             console.error(err)
+            // backward-compatible fix for users that did login without a verified email.
             if (err.message === "email not verified") {
                 localStorage.clear()
                 window.location.reload()
