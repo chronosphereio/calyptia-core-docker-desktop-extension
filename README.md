@@ -4,6 +4,10 @@ Calyptia Core simplifies observability for Kubernetes, allowing the user to crea
 
 This extension installs the Calyptia Core instance inside your Kubernetes cluster.
 
+## Demo
+
+[![Calyptia Core for Docker Desktop](https://img.youtube.com/vi/weAzQEpybZ4/0.jpg)](https://www.youtube.com/watch?v=weAzQEpybZ4 "Calyptia Core for Docker Desktop")
+
 ## Usage
 
 1. Ensure Docker Desktop is set up to allow extensions and start the Kubernetes cluster.
