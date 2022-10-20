@@ -77,7 +77,10 @@ export default function CoreInstance(props: Props) {
 
     if (viewData && connection) {
         return (
-            <Vivo records={records} connection={connection} setViewData={setViewData} />
+            <Vivo records={records}
+                  connection={connection}
+                  setViewData={setViewData}
+                  clearRecords={() => setRecords([])} />
         )
     }
 
