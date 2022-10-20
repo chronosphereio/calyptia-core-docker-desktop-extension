@@ -156,13 +156,15 @@ export default function CoreInstance(props: Props) {
             <Card sx={{ display: "flex", justifyContent: "space-between", marginTop: "1rem", padding: "1rem" }}>
                 <div>
                     <Typography color="#0D3D61" variant="body1" fontWeight={500}>
-                        Check your live data on our Vivo Space
+                        Check your live data with <b>Vivo</b>!
                     </Typography>
                     <Typography color="#0D3D61" variant="body1">
-                        All your events in only one space
+                        Inspect your events live in one space. To get started just add a <b>Vivo</b> destination to your 
+pipeline ;)
                     </Typography>
                 </div>
-                <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => setViewData(true)}>View now</Button>
+                <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => 
+setViewData(true)}>Open Vivo</Button>
             </Card>
         </Box>
     )
