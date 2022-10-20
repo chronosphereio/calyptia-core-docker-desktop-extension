@@ -10,11 +10,15 @@ import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from "@mui/material/Typography"
 import { useState } from "react"
+import { useAuthClient } from "../hooks/auth"
+import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import { useUserInfo } from "../hooks/user-info"
 import logoDarkSrc from "../images/logo-dark.svg"
 import { getUserInfoDisplayName } from "../lib/auth"
 
 export default function Header() {
+    const auth = useAuthClient()
+    const dd = useDockerDesktopClient()
     const usr = useUserInfo()
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
@@ -30,6 +34,7 @@ export default function Header() {
     const onLogout = () => {
         localStorage.clear()
         window.location.reload()
+        dd.host.openExternal(auth.buildLogoutURL())
     }
 
     return (

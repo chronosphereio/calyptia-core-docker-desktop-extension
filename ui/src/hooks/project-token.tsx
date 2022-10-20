@@ -34,10 +34,18 @@ export function ProjectTokenProvider(props: PropsWithChildren<unknown>) {
         }
 
         run().catch(err => {
-            console.error(err)
-            if (err.name !== "AbortError") {
-                setErr(err)
+            if (err.name === "AbortError") {
+                return
             }
+
+            console.error(err)
+            // backward-compatible fix for users that did login without a verified email.
+            if (err.message === "email not verified") {
+                localStorage.clear()
+                window.location.reload()
+            }
+
+            setErr(err)
         })
 
         return () => {

@@ -207,9 +207,6 @@ export class Client {
     }
 
     async fetchUserInfo(signal: AbortSignal, tok: Token) {
-        const body = new URLSearchParams()
-        body.set("access_token", tok.accessToken)
-
         const resp = await fetch(this.userInfoEndpoint, {
             signal,
             method: "GET",
@@ -218,6 +215,14 @@ export class Client {
             },
         })
         return handleResp<UserInfo>(resp)
+    }
+
+    buildLogoutURL(returnTo: string = "https://core.calyptia.com") {
+        const u = new URL("/v2/logout", "https://" + this.domain)
+        u.searchParams.set("client_id", this.clientID)
+        u.searchParams.set("returnTo", returnTo)
+
+        return u.toString()
     }
 }
 
