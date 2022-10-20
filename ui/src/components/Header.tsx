@@ -31,7 +31,7 @@ export default function Header() {
         setAnchorEl(null)
     }
 
-    const onLogout = async () => {
+    const onLogout = () => {
         localStorage.clear()
         window.location.reload()
         dd.host.openExternal(auth.buildLogoutURL())
