@@ -4,12 +4,16 @@ import Box from "@mui/material/Box"
 import LinearProgress from "@mui/material/LinearProgress"
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react"
 import { Token } from "../lib/cloud"
+import { useAuthClient } from "./auth"
 import { useCloudClient } from "./cloud"
+import { useDockerDesktopClient } from "./docker-desktop"
 
 const ProjectTokenContext = createContext(null as unknown as Token)
 
 export function ProjectTokenProvider(props: PropsWithChildren<unknown>) {
     const cloud = useCloudClient()
+    const dd = useDockerDesktopClient()
+    const auth = useAuthClient()
     const [tok, setTok] = useState<Token | null>(null)
     const [err, setErr] = useState<Error | null>(null)
 
@@ -42,6 +46,7 @@ export function ProjectTokenProvider(props: PropsWithChildren<unknown>) {
             // backward-compatible fix for users that did login without a verified email.
             if (err.message === "email not verified") {
                 localStorage.clear()
+                dd.host.openExternal(auth.buildLogoutURL())
                 window.location.reload()
             }
 

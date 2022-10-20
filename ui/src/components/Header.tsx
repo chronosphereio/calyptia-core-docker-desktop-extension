@@ -33,8 +33,8 @@ export default function Header() {
 
     const onLogout = () => {
         localStorage.clear()
-        window.location.reload()
         dd.host.openExternal(auth.buildLogoutURL())
+        window.location.reload()
     }
 
     return (
