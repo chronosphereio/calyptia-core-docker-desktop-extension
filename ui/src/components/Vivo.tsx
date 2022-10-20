@@ -1,6 +1,7 @@
 import UnfoldLess from "@mui/icons-material/UnfoldLess"
 import UnfoldMore from "@mui/icons-material/UnfoldMore"
 import Box from "@mui/material/Box"
+import Checkbox from '@mui/material/Checkbox';
 import Button from "@mui/material/Button"
 import IconButton from "@mui/material/IconButton"
 import List from "@mui/material/List"
@@ -8,6 +9,10 @@ import ListItem from "@mui/material/ListItem"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import { useEffect, useState } from 'react'
+import CodeMirror from '@uiw/react-codemirror';
+import { json } from '@codemirror/lang-json';
+import {linter, Diagnostic} from "@codemirror/lint"
+import { jsonToFilter, Filter } from '../lib/filter'
 
 import {
   VivoConnection, VivoStdoutEventData,
@@ -18,6 +23,8 @@ interface VivoProps {
   records: VivoStdoutEventData[]
   setViewData: (val: boolean) => void
   clearRecords: () => void
+  changeFilter: (filter: Filter | null) => void
+  filteredRecords: VivoStdoutEventData[]
 }
 
 function exampleFluentBitCommand(port: number) {
@@ -28,9 +35,35 @@ function exampleCurlCommand(port: number) {
   return `curl -H 'Content-Type: application/json' -d '[{"log": "line 1"},{"log":"line 2"}]' http://localhost:${port}/console`
 }
 
-export default function Vivo({ connection, records, setViewData, clearRecords }: VivoProps) {
+export default function Vivo({
+  connection, records, setViewData, clearRecords, filteredRecords, changeFilter
+}: VivoProps) {
   const [currentPort, setCurrentPort] = useState(connection.currentPort())
   const [pausedRecords, setPausedRecords] = useState<VivoStdoutEventData[] | null>(null);
+  const [filterDiagnostics, setFilterDiagnostics] = useState([] as Diagnostic[])
+  const [filterEnabled, setFilterEnabled] = useState(true)
+
+  function linterCallback(): Diagnostic[] {
+    return filterDiagnostics
+  }
+
+  function jsonFilterChanged(json: string) {
+    if (json.trim() === '') {
+      return changeFilter(null);
+    }
+    try {
+      const filter = jsonToFilter(json);
+      changeFilter(filter);
+      setFilterDiagnostics([])
+    } catch (err) {
+      setFilterDiagnostics([{
+        from: 1,
+        to: 1,
+        severity: 'error',
+        message: err.message
+      }]);
+    }
+  }
 
   function togglePause() {
     if (pausedRecords) {
@@ -46,6 +79,18 @@ export default function Vivo({ connection, records, setViewData, clearRecords }:
     } else {
       clearRecords();
     }
+  }
+
+  function getRecords() {
+    if (pausedRecords) {
+      return pausedRecords
+    }
+
+    if (filterEnabled) {
+      return filteredRecords
+    }
+
+    return records
   }
 
   useEffect(() => {
@@ -70,7 +115,17 @@ export default function Vivo({ connection, records, setViewData, clearRecords }:
         <pre>{exampleCurlCommand(currentPort)}</pre>
       </> : null}
 
-      <FluentBitData connection={connection} records={pausedRecords ? pausedRecords : records} />
+      <div>
+      <Checkbox checked={filterEnabled} onChange={e => setFilterEnabled(e.target.checked)} />
+      <span>Filter:</span>
+      <CodeMirror
+        maxHeight="100px"
+        height="auto"
+        onChange={jsonFilterChanged}
+        extensions={[json(), linter(linterCallback)]}
+        basicSetup={{ lineNumbers: false }}/>
+      <FluentBitData connection={connection} records={getRecords()} />
+      </div>
     </div>
   )
 }

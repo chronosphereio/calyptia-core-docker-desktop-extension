@@ -24,6 +24,7 @@ import {
   VivoConnection, VivoErrorEventListener, VivoStdoutEventData,
   VivoStdoutEventListener
 } from '../lib/vivo'
+import { Filter, applyVivoFilter } from '../lib/filter'
 
 type Props = {
     instanceID: string
@@ -38,20 +39,67 @@ function limitRecords(d: VivoStdoutEventData[], max: number): VivoStdoutEventDat
   return d
 }
 
+interface FilterRecords {
+  records: VivoStdoutEventData[]
+  filtered: VivoStdoutEventData[]
+  filter: Filter | null
+  limit: number
+}
+
 export default function CoreInstance(props: Props) {
     const [viewData, setViewData] = useState(false)
 
     const cloud = useCloudClient()
     const [connection, setConnection] = useState<VivoConnection | null>(null)
-    const [records, setRecords] = useState([] as VivoStdoutEventData[])
+    const [filterRecords, setFilterRecords] = useState<FilterRecords>({
+      records: [],
+      filter: null,
+      filtered: [],
+      limit: 100  // TODO: allow the user to specify this value later
+    })
 
     const stdoutListener: VivoStdoutEventListener = (data) => {
-      setRecords(r => limitRecords(r.concat(data), 100))
+      setFilterRecords(fr => {
+        const rv: FilterRecords = {
+          ...fr,
+          records: limitRecords(fr.records.concat(data), fr.limit)
+        }
+
+        if (rv.filter) {
+          rv.filtered = limitRecords(rv.filtered.concat(applyVivoFilter(rv.filter, data)), rv.limit)
+        } else {
+          rv.filtered = rv.records
+        }
+
+        return rv
+      })
     }
 
     const errorListener: VivoErrorEventListener = (data) => {
       console.error('Failed to parse stdout JSON:', data.message)
       console.error('Raw payload:', data.raw)
+    }
+
+    function filterChanged(newFilter: Filter | null) {
+      setFilterRecords(fr => {
+        const rv: FilterRecords = {
+          ...fr,
+          filter: newFilter
+        }
+
+        if (rv.filter) {
+          // apply filter to loaded records
+          rv.filtered = applyVivoFilter(rv.filter, rv.records)
+        } else {
+          rv.filtered = rv.records.slice()
+        }
+
+        return rv
+      })
+    }
+
+    function clearRecords() {
+      setFilterRecords(fr => ({ ...fr, records: [], filterRecords: [] }))
     }
 
     useEffect(() => {
@@ -77,10 +125,12 @@ export default function CoreInstance(props: Props) {
 
     if (viewData && connection) {
         return (
-            <Vivo records={records}
+            <Vivo records={filterRecords.records}
                   connection={connection}
                   setViewData={setViewData}
-                  clearRecords={() => setRecords([])} />
+                  clearRecords={clearRecords}
+                  changeFilter={filterChanged}
+                  filteredRecords={filterRecords.filtered}/>
         )
     }
 
