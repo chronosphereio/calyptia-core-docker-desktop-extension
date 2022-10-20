@@ -1,5 +1,9 @@
 import type { VivoStdoutEventData, } from './vivo'
 
+interface Includes {
+  includes: string
+}
+
 interface Equals {
   key: string
   equals: unknown
@@ -18,7 +22,16 @@ interface And {
   and: Filter[]
 }
 
-export type Filter = Equals | Regex | Or | And
+export type Filter = Includes | Equals | Regex | Or | And
+
+function recordMatchesIncludes(includes: Includes, record: Record<string, unknown>): boolean {
+  for (const [k, v] of Object.entries(record)) {
+    if (k.includes(includes.includes) || (typeof v === "string" && v.includes(includes.includes))) {
+      return true
+    }
+  }
+  return false
+}
 
 function recordMatchesEquals(equals: Equals, record: Record<string, unknown>): boolean {
   const value = record[equals.key]
@@ -69,6 +82,8 @@ export function recordMatchesFilter(filter: Filter, record: Record<string, unkno
     return recordMatchesAnd(filter, record);
   } else if ('matches' in filter) {
     return recordMatchesRegex(filter, record);
+  } else if ('includes' in filter) {
+    return recordMatchesIncludes(filter, record);
   } else {
     return recordMatchesEquals(filter, record);
   }
@@ -94,16 +109,19 @@ export function jsonToFilter(json: string): Filter {
     } else if (typeof obj !== 'object') {
       throw new Error(`Invalid filter "${JSON.stringify(obj)}"`)
     } else if (typeof obj['key'] === 'string' && typeof obj['matches'] === 'string') {
-      if (typeof obj['flags'] !== 'string' && obj['flags'] != null) {
-        throw new Error('Invalid type for Regex "flags"')
-      }
       return { key: obj['key'], matches: new RegExp(obj['matches'], obj['flags'] || '') }
     } else if (typeof obj['key'] === 'string' && 'equals' in obj) {
       return { key: obj['key'], equals: obj['equals'] }
+    } else if (typeof obj['includes'] === "string") {
+      return { includes: obj['includes'].toString() }
     } else {
       throw new Error(`Invalid filter "${JSON.stringify(obj)}"`)
     }
   }
 
   return convert(parsed);
+}
+
+export function stringToIncludes(str: string): Includes {
+  return { includes: str }
 }

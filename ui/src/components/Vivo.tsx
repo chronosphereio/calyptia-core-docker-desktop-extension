@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react'
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import {linter, Diagnostic} from "@codemirror/lint"
-import { jsonToFilter, applyVivoFilter, Filter } from '../lib/filter'
+import { stringToIncludes, applyVivoFilter, Filter } from '../lib/filter'
 
 import {
   VivoConnection, VivoStdoutEventData,
@@ -48,12 +48,12 @@ export default function Vivo({
     return filterDiagnostics
   }
 
-  function jsonFilterChanged(json: string) {
-    if (json.trim() === '') {
+  function filterChanged(fstr: string) {
+    if (fstr.trim() === '') {
       return changeFilter(null);
     }
     try {
-      const filter = jsonToFilter(json);
+      const filter = stringToIncludes(fstr);
       changeFilter(filter);
       setFilterDiagnostics([])
     } catch (err) {
@@ -122,7 +122,7 @@ export default function Vivo({
       <CodeMirror
         maxHeight="100px"
         height="auto"
-        onChange={jsonFilterChanged}
+        onChange={filterChanged}
         extensions={[json(), linter(linterCallback)]}
         basicSetup={{ lineNumbers: false }}/>
       <FluentBitData connection={connection} records={getRecords()} />
