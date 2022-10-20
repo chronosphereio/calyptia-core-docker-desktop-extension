@@ -17,6 +17,7 @@ interface VivoProps {
   connection: VivoConnection
   records: VivoStdoutEventData[]
   setViewData: (val: boolean) => void
+  clearRecords: () => void
 }
 
 function exampleFluentBitCommand(port: number) {
@@ -27,7 +28,7 @@ function exampleCurlCommand(port: number) {
   return `curl -H 'Content-Type: application/json' -d '[{"log": "line 1"},{"log":"line 2"}]' http://localhost:${port}/console`
 }
 
-export default function Vivo({ connection, records, setViewData }: VivoProps) {
+export default function Vivo({ connection, records, setViewData, clearRecords }: VivoProps) {
   const [currentPort, setCurrentPort] = useState(connection.currentPort())
   const [pausedRecords, setPausedRecords] = useState<VivoStdoutEventData[] | null>(null);
 
@@ -36,6 +37,14 @@ export default function Vivo({ connection, records, setViewData }: VivoProps) {
       setPausedRecords(null);
     } else {
       setPausedRecords(records.slice());
+    }
+  }
+
+  function clear() {
+    if (pausedRecords) {
+      setPausedRecords([]);
+    } else {
+      clearRecords();
     }
   }
 
@@ -52,6 +61,7 @@ export default function Vivo({ connection, records, setViewData }: VivoProps) {
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => setViewData(false)}>Go back</Button>
         <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={togglePause}>{ pausedRecords ? "Continue" : "Pause" }</Button>
+        <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={clear}>{ "Clear" }</Button>
       </div>
 
       {currentPort !== null ? <>
