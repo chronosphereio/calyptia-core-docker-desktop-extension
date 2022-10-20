@@ -47,6 +47,7 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
             const usr = await auth.fetchUserInfo(ctrl.signal, tok)
 
             if (usr.email_verified !== true) {
+                dd.host.openExternal(auth.buildLogoutURL())
                 throw new Error("email not verified. You will get a verification email to verify your account")
             }
 
