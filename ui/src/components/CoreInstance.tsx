@@ -130,6 +130,7 @@ export default function CoreInstance(props: Props) {
                   setViewData={setViewData}
                   clearRecords={clearRecords}
                   changeFilter={filterChanged}
+                  filter={filterRecords.filter}
                   filteredRecords={filterRecords.filtered}/>
         )
     }

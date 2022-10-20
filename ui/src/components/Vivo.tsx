@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react'
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import {linter, Diagnostic} from "@codemirror/lint"
-import { jsonToFilter, Filter } from '../lib/filter'
+import { jsonToFilter, applyVivoFilter, Filter } from '../lib/filter'
 
 import {
   VivoConnection, VivoStdoutEventData,
@@ -25,6 +25,7 @@ interface VivoProps {
   clearRecords: () => void
   changeFilter: (filter: Filter | null) => void
   filteredRecords: VivoStdoutEventData[]
+  filter: Filter | null
 }
 
 function exampleFluentBitCommand(port: number) {
@@ -36,7 +37,7 @@ function exampleCurlCommand(port: number) {
 }
 
 export default function Vivo({
-  connection, records, setViewData, clearRecords, filteredRecords, changeFilter
+  connection, records, setViewData, clearRecords, filteredRecords, changeFilter, filter
 }: VivoProps) {
   const [currentPort, setCurrentPort] = useState(connection.currentPort())
   const [pausedRecords, setPausedRecords] = useState<VivoStdoutEventData[] | null>(null);
@@ -83,7 +84,7 @@ export default function Vivo({
 
   function getRecords() {
     if (pausedRecords) {
-      return pausedRecords
+      return filter && filterEnabled ? applyVivoFilter(filter, pausedRecords) : pausedRecords
     }
 
     if (filterEnabled) {
