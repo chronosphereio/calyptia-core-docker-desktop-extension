@@ -46,6 +46,9 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
             const tok = await dc.fetchToken(ctrl.signal)
             const usr = await auth.fetchUserInfo(ctrl.signal, tok)
 
+            if (usr.email_verified !== true) {
+                throw new Error("email not verified. You will get a verification email to verify your account")
+            }
 
             localStorage.setItem("user_token", tok.toJSON())
             localStorage.setItem("user_info", JSON.stringify(usr))
@@ -54,7 +57,7 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
             setUserInfo(usr)
         } catch (err) {
             if (err.name !== "AbortError") {
-                dd.desktopUI.toast.error(err.message)
+                dd.desktopUI.toast.error("Error: " + err.message)
             }
         } finally {
             ctrl.abort()
