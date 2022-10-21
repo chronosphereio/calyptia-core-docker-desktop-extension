@@ -10,7 +10,7 @@ export type DeviceCodeResponse = {
     interval: number  // seconds
 }
 
-class DeviceCode {
+export class DeviceCode {
     deviceCode = ""
     userCode = ""
     verificationURI = ""
