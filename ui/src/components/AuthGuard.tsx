@@ -3,7 +3,7 @@ import { useAuthClient } from "../hooks/auth"
 import { CloudClientProvider } from "../hooks/cloud"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import { UserInfoProvider } from "../hooks/user-info"
-import { ReuseTokenSource, Token, tokenFromJSON, UserInfo } from "../lib/auth"
+import { DeviceCode, ReuseTokenSource, Token, tokenFromJSON, UserInfo } from "../lib/auth"
 import LoginScreen from "./LoginScreen"
 
 export type AuthGuardProps = {
@@ -16,6 +16,7 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
     const [tokenSource, setTokenSource] = useState<ReuseTokenSource | null>(null)
     const [loading, setLoading] = useState(false)
+    const [deviceCode, setDeviceCode] = useState<DeviceCode | null>(null)
 
     const setTokenSourceFromTok = (tok: Token) => {
         const ctrl = new AbortController()
@@ -41,6 +42,7 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
         const ctrl = new AbortController()
         try {
             const dc = await auth.fetchDeviceCode(ctrl.signal)
+            setDeviceCode(dc)
             dd.host.openExternal(dc.verificationURIComplete)
 
             const tok = await dc.fetchToken(ctrl.signal)
@@ -63,6 +65,7 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
         } finally {
             ctrl.abort()
             setLoading(false)
+            setDeviceCode(null)
         }
     }
 
@@ -75,6 +78,6 @@ export default function AuthGuard(props: PropsWithChildren<AuthGuardProps>) {
     }
 
     return (
-        <LoginScreen loading={loading} onLoginClick={login} />
+        <LoginScreen loading={loading} devideCode={deviceCode} onLoginClick={login} />
     )
 }
