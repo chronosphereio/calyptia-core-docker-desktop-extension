@@ -124,14 +124,14 @@ export default function Vivo({
           <SampleCommands port={currentPort} />
         </> : null}
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
+        <Stack direction="row" alignItems="center" justifyContent="flex-end" mb={1}>
+          <FormControlLabel label="Filter" control={(
+            <Switch checked={filterEnabled} onChange={e => setFilterEnabled(e.target.checked)} />
+          )} />
           <ButtonGroup variant="outlined">
             <Button sx={{ width: "calc(8ch + 2rem)" }} onClick={togglePause}>{pausedRecords ? "Continue" : "Pause"}</Button>
             <Button sx={{ width: "calc(8ch + 2rem)" }} onClick={clear}>{"Clear"}</Button>
           </ButtonGroup>
-          <FormControlLabel label="Filter" control={(
-            <Switch checked={filterEnabled} onChange={e => setFilterEnabled(e.target.checked)} />
-          )} />
         </Stack>
 
         {filterEnabled && (
