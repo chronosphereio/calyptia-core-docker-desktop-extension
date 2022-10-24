@@ -1,4 +1,4 @@
-import type { VivoStdoutEventData, } from './vivo'
+import type { VivoStdoutEventData } from './vivo'
 
 interface Includes {
   includes: string
@@ -26,7 +26,7 @@ export type Filter = Includes | Equals | Regex | Or | And
 
 function recordMatchesIncludes(includes: Includes, record: Record<string, unknown>): boolean {
   for (const [k, v] of Object.entries(record)) {
-    if (k.includes(includes.includes) || (typeof v === "string" && v.includes(includes.includes))) {
+    if (k.includes(includes.includes) || (String(v).includes(includes.includes))) {
       return true
     }
   }
@@ -44,7 +44,7 @@ function recordMatchesEquals(equals: Equals, record: Record<string, unknown>): b
 function recordMatchesRegex(regex: Regex, record: Record<string, unknown>): boolean {
   const value = record[regex.key]
   if (typeof value !== 'string') {
-    return false;
+    return false
   }
   return regex.matches.test(value)
 }
@@ -55,51 +55,51 @@ function recordMatchesOr(or: Or, record: Record<string, unknown>): boolean {
   for (const f of or.or) {
     rv = rv || recordMatchesFilter(f, record)
     if (rv) {
-      break;
+      break
     }
   }
 
-  return rv;
+  return rv
 }
 
 function recordMatchesAnd(and: And, record: Record<string, unknown>): boolean {
-  let rv = true;
+  let rv = true
 
   for (const f of and.and) {
     rv = rv && recordMatchesFilter(f, record)
     if (!rv) {
-      break;
+      break
     }
   }
 
-  return rv;
+  return rv
 }
 
 export function recordMatchesFilter(filter: Filter, record: Record<string, unknown>): boolean {
   if ('or' in filter) {
-    return recordMatchesOr(filter, record);
+    return recordMatchesOr(filter, record)
   } else if ('and' in filter) {
-    return recordMatchesAnd(filter, record);
+    return recordMatchesAnd(filter, record)
   } else if ('matches' in filter) {
-    return recordMatchesRegex(filter, record);
+    return recordMatchesRegex(filter, record)
   } else if ('includes' in filter) {
-    return recordMatchesIncludes(filter, record);
+    return recordMatchesIncludes(filter, record)
   } else {
-    return recordMatchesEquals(filter, record);
+    return recordMatchesEquals(filter, record)
   }
 }
 
 export function applyFilter(filter: Filter, records: Record<string, unknown>[]) {
-  return records.filter(r => recordMatchesFilter(filter, r));
+  return records.filter(r => recordMatchesFilter(filter, r))
 }
 
 export function applyVivoFilter(filter: Filter, records: VivoStdoutEventData[]) {
-  return records.filter(r => recordMatchesFilter(filter, r.data));
+  return records.filter(r => recordMatchesFilter(filter, r.data))
 }
 
 // Temporary hack that allows users to type in a filter without creating a proper query language
 export function jsonToFilter(json: string): Filter {
-  const parsed: unknown = JSON.parse(json);
+  const parsed: unknown = JSON.parse(json)
 
   function convert(obj: unknown): Filter {
     if (Array.isArray(obj['or'])) {
@@ -119,7 +119,7 @@ export function jsonToFilter(json: string): Filter {
     }
   }
 
-  return convert(parsed);
+  return convert(parsed)
 }
 
 export function stringToIncludes(str: string): Includes {

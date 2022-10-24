@@ -1,22 +1,29 @@
+import { json } from '@codemirror/lang-json'
+import { Diagnostic, linter } from "@codemirror/lint"
+import ArrowBackIosNew from "@mui/icons-material/ArrowBackIosNew"
 import UnfoldLess from "@mui/icons-material/UnfoldLess"
 import UnfoldMore from "@mui/icons-material/UnfoldMore"
+import TabContext from '@mui/lab/TabContext'
+import TabList from '@mui/lab/TabList'
+import TabPanel from '@mui/lab/TabPanel'
 import Box from "@mui/material/Box"
-import Checkbox from '@mui/material/Checkbox';
 import Button from "@mui/material/Button"
+import ButtonGroup from "@mui/material/ButtonGroup"
+import FormControlLabel from "@mui/material/FormControlLabel"
 import IconButton from "@mui/material/IconButton"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
 import Stack from "@mui/material/Stack"
+import Switch from "@mui/material/Switch"
+import Tab from '@mui/material/Tab'
 import Typography from "@mui/material/Typography"
+import CodeMirror from '@uiw/react-codemirror'
 import { useEffect, useState } from 'react'
-import CodeMirror from '@uiw/react-codemirror';
-import { json } from '@codemirror/lang-json';
-import {linter, Diagnostic} from "@codemirror/lint"
-import { stringToIncludes, applyVivoFilter, Filter } from '../lib/filter'
-
+import { applyVivoFilter, Filter, stringToIncludes } from '../lib/filter'
 import {
-  VivoConnection, VivoStdoutEventData,
+  VivoConnection, VivoStdoutEventData
 } from '../lib/vivo'
+import StyledCard from "./StyledCard"
 
 interface VivoProps {
   connection: VivoConnection
@@ -40,7 +47,7 @@ export default function Vivo({
   connection, records, setViewData, clearRecords, filteredRecords, changeFilter, filter
 }: VivoProps) {
   const [currentPort, setCurrentPort] = useState(connection.currentPort())
-  const [pausedRecords, setPausedRecords] = useState<VivoStdoutEventData[] | null>(null);
+  const [pausedRecords, setPausedRecords] = useState<VivoStdoutEventData[] | null>(null)
   const [filterDiagnostics, setFilterDiagnostics] = useState([] as Diagnostic[])
   const [filterEnabled, setFilterEnabled] = useState(true)
 
@@ -50,11 +57,11 @@ export default function Vivo({
 
   function filterChanged(fstr: string) {
     if (fstr.trim() === '') {
-      return changeFilter(null);
+      return changeFilter(null)
     }
     try {
-      const filter = stringToIncludes(fstr);
-      changeFilter(filter);
+      const filter = stringToIncludes(fstr)
+      changeFilter(filter)
       setFilterDiagnostics([])
     } catch (err) {
       setFilterDiagnostics([{
@@ -62,23 +69,23 @@ export default function Vivo({
         to: 1,
         severity: 'error',
         message: err.message
-      }]);
+      }])
     }
   }
 
   function togglePause() {
     if (pausedRecords) {
-      setPausedRecords(null);
+      setPausedRecords(null)
     } else {
-      setPausedRecords(records.slice());
+      setPausedRecords(records.slice())
     }
   }
 
   function clear() {
     if (pausedRecords) {
-      setPausedRecords([]);
+      setPausedRecords([])
     } else {
-      clearRecords();
+      clearRecords()
     }
   }
 
@@ -103,40 +110,53 @@ export default function Vivo({
   }, [])
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => setViewData(false)}>Go back</Button>
-        <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={togglePause}>{ pausedRecords ? "Continue" : "Pause" }</Button>
-        <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={clear}>{ "Clear" }</Button>
-      </div>
+    <Box mb={10}>
+      <StyledCard title="Live Data Viewer" subheader="All your events in only one space" action={(
+        <Box>
+          <Button sx={{ color: "#404186" }} startIcon={<ArrowBackIosNew />} onClick={() => {
+            setViewData(false)
+          }}>
+            Back
+          </Button>
+        </Box>
+      )}>
+        {currentPort !== null ? <>
+          <SampleCommands port={currentPort} />
+        </> : null}
 
-      {currentPort !== null ? <>
-        <p>Sample commands to post data:</p>
-        <pre>{exampleFluentBitCommand(currentPort)}</pre>
-        <pre>{exampleCurlCommand(currentPort)}</pre>
-      </> : null}
+        <Stack direction="row" alignItems="center" justifyContent="flex-end" mb={1}>
+          <FormControlLabel label="Filter" control={(
+            <Switch checked={filterEnabled} onChange={e => setFilterEnabled(e.target.checked)} />
+          )} />
+          <ButtonGroup variant="outlined">
+            <Button sx={{ width: "calc(8ch + 2rem)" }} onClick={togglePause}>{pausedRecords ? "Continue" : "Pause"}</Button>
+            <Button sx={{ width: "calc(8ch + 2rem)" }} onClick={clear}>{"Clear"}</Button>
+          </ButtonGroup>
+        </Stack>
 
-      <div>
-      <Checkbox checked={filterEnabled} onChange={e => setFilterEnabled(e.target.checked)} />
-      <span>Filter:</span>
-      <CodeMirror
-        maxHeight="100px"
-        height="auto"
-        onChange={filterChanged}
-        extensions={[json(), linter(linterCallback)]}
-        basicSetup={{ lineNumbers: false }}/>
-      <FluentBitData connection={connection} records={getRecords()} />
-      </div>
-    </div>
+        {filterEnabled && (
+          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} my={2}>
+            <CodeMirror
+              placeholder="Search through your logs records that include the following text"
+              maxHeight="40vh"
+              height="auto"
+              onChange={filterChanged}
+              extensions={[json(), linter(linterCallback)]}
+              basicSetup={{ lineNumbers: false }} />
+          </Box>
+        )}
+
+        <FluentBitData records={getRecords()} />
+      </StyledCard>
+    </Box>
   )
 }
 
 interface FluentBitDataProps {
-  connection: VivoConnection
   records: VivoStdoutEventData[]
 }
 
-function FluentBitData({ records, connection }: FluentBitDataProps) {
+function FluentBitData({ records }: FluentBitDataProps) {
   const [foldMap, setFoldMap] = useState({})
 
   const onFold = id => {
@@ -171,6 +191,42 @@ function FluentBitData({ records, connection }: FluentBitDataProps) {
           )
         })}
       </List>
+    </Box>
+  )
+}
+
+type SampleCommandsProps = {
+  port: number
+}
+
+function SampleCommands(props: SampleCommandsProps) {
+  const [value, setValue] = useState('1')
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue)
+  }
+
+  return (
+    <Box sx={{ width: '100%', typography: 'body1' }}>
+      <Typography>Sample Commands to Send Data</Typography>
+      <TabContext value={value}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <TabList onChange={handleChange} aria-label="lab API tabs example">
+            <Tab label="Fluent-Bit" value="1" />
+            <Tab label="Curl" value="2" />
+          </TabList>
+        </Box>
+        <TabPanel value="1" sx={{ pl: 0, pr: 0 }}>
+          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} px={2} overflow="auto">
+            <pre>{exampleFluentBitCommand(props.port)}</pre>
+          </Box>
+        </TabPanel>
+        <TabPanel value="2" sx={{ pl: 0, pr: 0 }}>
+          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} px={2} overflow="auto">
+            <pre>{exampleCurlCommand(props.port)}</pre>
+          </Box>
+        </TabPanel>
+      </TabContext>
     </Box>
   )
 }
