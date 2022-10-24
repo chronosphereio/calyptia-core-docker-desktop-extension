@@ -124,31 +124,29 @@ export default function Vivo({
           <SampleCommands port={currentPort} />
         </> : null}
 
-        <ButtonGroup>
-          <Button variant="contained" sx={{ backgroundColor: "#1669AA", width: "calc(8ch + 2rem)" }} onClick={togglePause}>{pausedRecords ? "Continue" : "Pause"}</Button>
-          <Button variant="contained" sx={{ backgroundColor: "#1669AA", width: "calc(8ch + 2rem)" }} onClick={clear}>{"Clear"}</Button>
-        </ButtonGroup>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
+          <ButtonGroup variant="text">
+            <Button sx={{ width: "calc(8ch + 2rem)" }} onClick={togglePause}>{pausedRecords ? "Continue" : "Pause"}</Button>
+            <Button sx={{ width: "calc(8ch + 2rem)" }} onClick={clear}>{"Clear"}</Button>
+          </ButtonGroup>
+          <FormControlLabel label="Filter" control={(
+            <Switch checked={filterEnabled} onChange={e => setFilterEnabled(e.target.checked)} />
+          )} />
+        </Stack>
 
-
-        <div>
-          <Box my={2}>
-            <FormControlLabel label="Filter" control={(
-              <Switch checked={filterEnabled} onChange={e => setFilterEnabled(e.target.checked)} />
-            )} />
-            {filterEnabled && (
-              <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1}>
-                <CodeMirror
-                  placeholder="Search through your logs records that include the following text"
-                  maxHeight="40vh"
-                  height="auto"
-                  onChange={filterChanged}
-                  extensions={[json(), linter(linterCallback)]}
-                  basicSetup={{ lineNumbers: false }} />
-              </Box>
-            )}
+        {filterEnabled && (
+          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} my={2}>
+            <CodeMirror
+              placeholder="Search through your logs records that include the following text"
+              maxHeight="40vh"
+              height="auto"
+              onChange={filterChanged}
+              extensions={[json(), linter(linterCallback)]}
+              basicSetup={{ lineNumbers: false }} />
           </Box>
-          <FluentBitData records={getRecords()} />
-        </div>
+        )}
+
+        <FluentBitData records={getRecords()} />
       </StyledCard>
     </Box>
   )
@@ -218,13 +216,13 @@ function SampleCommands(props: SampleCommandsProps) {
             <Tab label="Curl" value="2" />
           </TabList>
         </Box>
-        <TabPanel value="1">
-          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} padding={2} overflow="auto">
+        <TabPanel value="1" sx={{ pl: 0, pr: 0 }}>
+          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} px={2} overflow="auto">
             <pre>{exampleFluentBitCommand(props.port)}</pre>
           </Box>
         </TabPanel>
-        <TabPanel value="2">
-          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} padding={2} overflow="auto">
+        <TabPanel value="2" sx={{ pl: 0, pr: 0 }}>
+          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} px={2} overflow="auto">
             <pre>{exampleCurlCommand(props.port)}</pre>
           </Box>
         </TabPanel>
