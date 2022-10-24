@@ -125,7 +125,7 @@ export default function Vivo({
         </> : null}
 
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
-          <ButtonGroup variant="text">
+          <ButtonGroup variant="outlined">
             <Button sx={{ width: "calc(8ch + 2rem)" }} onClick={togglePause}>{pausedRecords ? "Continue" : "Pause"}</Button>
             <Button sx={{ width: "calc(8ch + 2rem)" }} onClick={clear}>{"Clear"}</Button>
           </ButtonGroup>
