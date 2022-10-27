@@ -11,20 +11,20 @@ import LinearProgress from "@mui/material/LinearProgress"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import { useQuery } from "@tanstack/react-query"
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useCloudClient } from "../hooks/cloud"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import birdDarkSrc from "../images/bird-dark.svg"
 import { CoreInstance as CoreInstanceType, CoreInstanceStatus } from "../lib/cloud"
+import { applyVivoFilter, Filter } from '../lib/filter'
+import {
+    vivoConnection,
+    VivoConnection, VivoErrorEventListener, VivoStdoutEventData,
+    VivoStdoutEventListener
+} from '../lib/vivo'
 import CoreInstanceMenu from "./CoreInstanceMenu"
 import StyledCard from "./StyledCard"
 import Vivo from "./Vivo"
-import {
-  vivoConnection,
-  VivoConnection, VivoErrorEventListener, VivoStdoutEventData,
-  VivoStdoutEventListener
-} from '../lib/vivo'
-import { Filter, applyVivoFilter } from '../lib/filter'
 
 type Props = {
     instanceID: string
@@ -32,18 +32,18 @@ type Props = {
 
 
 function limitRecords(d: VivoStdoutEventData[], max: number): VivoStdoutEventData[] {
-  const delta = d.length - max
-  if (delta > 0) {
-    return d.slice(delta)
-  }
-  return d
+    const delta = d.length - max
+    if (delta > 0) {
+        return d.slice(delta)
+    }
+    return d
 }
 
 interface FilterRecords {
-  records: VivoStdoutEventData[]
-  filtered: VivoStdoutEventData[]
-  filter: Filter | null
-  limit: number
+    records: VivoStdoutEventData[]
+    filtered: VivoStdoutEventData[]
+    filter: Filter | null
+    limit: number
 }
 
 export default function CoreInstance(props: Props) {
@@ -52,68 +52,68 @@ export default function CoreInstance(props: Props) {
     const cloud = useCloudClient()
     const [connection, setConnection] = useState<VivoConnection | null>(null)
     const [filterRecords, setFilterRecords] = useState<FilterRecords>({
-      records: [],
-      filter: null,
-      filtered: [],
-      limit: 100  // TODO: allow the user to specify this value later
+        records: [],
+        filter: null,
+        filtered: [],
+        limit: 100  // TODO: allow the user to specify this value later
     })
 
     const stdoutListener: VivoStdoutEventListener = (data) => {
-      setFilterRecords(fr => {
-        const rv: FilterRecords = {
-          ...fr,
-          records: limitRecords(fr.records.concat(data), fr.limit)
-        }
+        setFilterRecords(fr => {
+            const rv: FilterRecords = {
+                ...fr,
+                records: limitRecords(fr.records.concat(data), fr.limit)
+            }
 
-        if (rv.filter) {
-          rv.filtered = limitRecords(rv.filtered.concat(applyVivoFilter(rv.filter, data)), rv.limit)
-        } else {
-          rv.filtered = rv.records
-        }
+            if (rv.filter) {
+                rv.filtered = limitRecords(rv.filtered.concat(applyVivoFilter(rv.filter, data)), rv.limit)
+            } else {
+                rv.filtered = rv.records
+            }
 
-        return rv
-      })
+            return rv
+        })
     }
 
     const errorListener: VivoErrorEventListener = (data) => {
-      console.error('Failed to parse stdout JSON:', data.message)
-      console.error('Raw payload:', data.raw)
+        console.error('Failed to parse stdout JSON:', data.message)
+        console.error('Raw payload:', data.raw)
     }
 
     function filterChanged(newFilter: Filter | null) {
-      setFilterRecords(fr => {
-        const rv: FilterRecords = {
-          ...fr,
-          filter: newFilter
-        }
+        setFilterRecords(fr => {
+            const rv: FilterRecords = {
+                ...fr,
+                filter: newFilter
+            }
 
-        if (rv.filter) {
-          // apply filter to loaded records
-          rv.filtered = applyVivoFilter(rv.filter, rv.records)
-        } else {
-          rv.filtered = rv.records.slice()
-        }
+            if (rv.filter) {
+                // apply filter to loaded records
+                rv.filtered = applyVivoFilter(rv.filter, rv.records)
+            } else {
+                rv.filtered = rv.records.slice()
+            }
 
-        return rv
-      })
+            return rv
+        })
     }
 
     function clearRecords() {
-      setFilterRecords(fr => ({ ...fr, records: [], filterRecords: [] }))
+        setFilterRecords(fr => ({ ...fr, records: [], filtered: [] }))
     }
 
     useEffect(() => {
-      const conn = vivoConnection()
-      setConnection(conn)
+        const conn = vivoConnection()
+        setConnection(conn)
 
-      conn.on('stdout', stdoutListener)
-      conn.on('error', errorListener)
-      return () => {
-        conn.off('stdout', stdoutListener)
-        conn.off('error', errorListener)
-        conn.close();
-      }
-    }, []);
+        conn.on('stdout', stdoutListener)
+        conn.on('error', errorListener)
+        return () => {
+            conn.off('stdout', stdoutListener)
+            conn.off('error', errorListener)
+            conn.close()
+        }
+    }, [])
 
     const { isError, error: err, isLoading, data: coreInstance } = useQuery(
         ["core_instance", props.instanceID],
@@ -126,12 +126,12 @@ export default function CoreInstance(props: Props) {
     if (viewData && connection) {
         return (
             <Vivo records={filterRecords.records}
-                  connection={connection}
-                  setViewData={setViewData}
-                  clearRecords={clearRecords}
-                  changeFilter={filterChanged}
-                  filter={filterRecords.filter}
-                  filteredRecords={filterRecords.filtered}/>
+                connection={connection}
+                setViewData={setViewData}
+                clearRecords={clearRecords}
+                changeFilter={filterChanged}
+                filter={filterRecords.filter}
+                filteredRecords={filterRecords.filtered} />
         )
     }
 
@@ -159,12 +159,12 @@ export default function CoreInstance(props: Props) {
                         Check your live data with <b>Vivo</b>!
                     </Typography>
                     <Typography color="#0D3D61" variant="body1">
-                        Inspect your events live in one space. To get started just add a <b>Vivo</b> destination to your 
-pipeline ;)
+                        Inspect your events live in one space. To get started just add a <b>Vivo</b> destination to your
+                        pipeline ;)
                     </Typography>
                 </div>
-                <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => 
-setViewData(true)}>Open Vivo</Button>
+                <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() =>
+                    setViewData(true)}>Open Vivo</Button>
             </Card>
         </Box>
     )
