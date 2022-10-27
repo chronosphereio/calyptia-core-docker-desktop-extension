@@ -1,5 +1,9 @@
+import ErrorIcon from "@mui/icons-material/Error"
 import { LinearProgress } from "@mui/material"
+import Alert from "@mui/material/Alert"
+import AlertTitle from "@mui/material/AlertTitle"
 import { useEffect, useState } from "react"
+import { useCloudClient } from "../hooks/cloud"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import CoreInstance from "./CoreInstance"
 import DeployCoreInstance from "./DeployCoreInstance"
@@ -15,39 +19,77 @@ export default function CoreInstanceScreen() {
 
 function CoreInstanceDeploymentLoader() {
     const dd = useDockerDesktopClient()
+    const cloud = useCloudClient()
     const [loading, setLoading] = useState(true)
-    const [coreInstanceID, setCoreInstanceID] = useState<string | null>(null)
+    const [coreInstance, setCoreInstance] = useState<{ id: string, deploymentName: string } | null>(null)
+    const [err, setErr] = useState<Error | null>(null)
 
-    const loadCoreInstanceID = async () => {
+    const loadCoreInstanceID = async (signal: AbortSignal) => {
         try {
             // loads the first core instance id
             const output = await dd.extension.host.cli.exec("kubectl", [
                 "get",
                 "deployments",
-                "-l", "calyptia_aggregator_id",
-                "--output=jsonpath={.items[0].metadata.labels.calyptia_aggregator_id}",
+                "-l", `"calyptia_aggregator_id, !calyptia_pipeline_id"`,
+                "-o", `"jsonpath-as-json={.items[0].metadata['labels.calyptia_aggregator_id', 'name']}"`,
                 "--context", "docker-desktop",
             ])
             if (output.stderr !== "") {
                 throw new Error(output.stderr)
             }
 
-            return output.stdout
+            const [id, deploymentName] = JSON.parse(output.stdout)
+            // Double check with Cloud API to warranty that the instance exists
+            // in Cloud and not only locally.
+            await cloud.fetchCoreInstance(signal, id)
+            return { id, deploymentName }
         } catch (err) {
-            return null
+            // Case were nothing found in label selector.
+            if (typeof err.stderr === "string" && err.stderr.includes("array index out of bounds")) {
+                return null
+            }
+
+            // Case were the core instance was deleted using Core UI and the
+            // kubernetes deployment was not actually deleted.
+            if (err.message === "aggregator not found") {
+                return null
+            }
+            throw err
         }
     }
 
     useEffect(() => {
-        loadCoreInstanceID().then(setCoreInstanceID).finally(() => {
+        const ctrl = new AbortController()
+        loadCoreInstanceID(ctrl.signal).then(setCoreInstance, err => {
+            console.error(err)
+            setErr(err)
+        }).finally(() => {
             setLoading(false)
         })
+        return () => {
+            ctrl.abort()
+        }
     }, [])
 
-    return loading ? (
-        <LinearProgress />
-    ) : coreInstanceID !== null ? (
-        <CoreInstance instanceID={coreInstanceID} />
+    if (err != null) {
+        return (
+            <Alert iconMapping={{
+                error: <ErrorIcon fontSize="inherit" />,
+            }} severity="error" color="error">
+                <AlertTitle>Could not fetch core instance from Cloud</AlertTitle>
+                {(err as Error).message}
+            </Alert>
+        )
+    }
+
+    if (loading) {
+        return (
+            <LinearProgress />
+        )
+    }
+
+    return coreInstance !== null ? (
+        <CoreInstance instanceID={coreInstance.id} deploymentName={coreInstance.deploymentName} />
     ) : (
         <DeployCoreInstance />
     )
