@@ -53,7 +53,7 @@ export default function DeployCoreInstance() {
         if (output.stderr !== "") {
             throw new Error(output.stderr)
         }
-        
+
         // Assumption is we deploy/delete Vivo with Core - no extra handling, any issues then delete and re-deploy
         await deployVivo()
     }
@@ -63,7 +63,7 @@ export default function DeployCoreInstance() {
         deployCoreInstance().then(() => {
             window.location.reload()
         }).catch(err => {
-            dd.desktopUI.toast.error(err.message)
+            dd.desktopUI.toast.error(err.message || err.stderr)
             setLoading(false)
         })
     }

@@ -28,6 +28,7 @@ import Vivo from "./Vivo"
 
 type Props = {
     instanceID: string
+    deploymentName: string
 }
 
 
@@ -47,9 +48,9 @@ interface FilterRecords {
 }
 
 export default function CoreInstance(props: Props) {
-    const [viewData, setViewData] = useState(false)
-
+    const dd = useDockerDesktopClient()
     const cloud = useCloudClient()
+    const [viewData, setViewData] = useState(false)
     const [connection, setConnection] = useState<VivoConnection | null>(null)
     const [filterRecords, setFilterRecords] = useState<FilterRecords>({
         records: [],
@@ -113,7 +114,7 @@ export default function CoreInstance(props: Props) {
             conn.off('error', errorListener)
             conn.close()
         }
-    }, [])
+    }, [props.instanceID])
 
     const { isError, error: err, isLoading, data: coreInstance } = useQuery(
         ["core_instance", props.instanceID],
@@ -122,6 +123,42 @@ export default function CoreInstance(props: Props) {
             refetchInterval: 3000, // 3s
         },
     )
+
+    useEffect(() => {
+        if (dd.extension.host === undefined) {
+            return
+        }
+
+        const deleted = async () => {
+            const result = await dd.extension.host?.cli.exec("kubectl", [
+                "wait",
+                "--for", "delete",
+                "deployment/" + props.deploymentName,
+                "--timeout", "3s",
+                "--context", "docker-desktop",
+            ])
+            if (result.stderr !== "") {
+                throw new Error(result.stderr)
+            }
+            return result.stdout
+        }
+
+        const id = setInterval(() => {
+            deleted().then(() => {
+                dd.desktopUI.toast.warning("Deployment was deleted")
+                window.location.reload()
+            }, err => {
+                const timeoutSubstr = "error: timed out waiting for the condition"
+                if ((err instanceof Error && err.message.includes(timeoutSubstr)) || (typeof err.stderr === "string" && err.stderr.includes(timeoutSubstr))) {
+                    return
+                }
+            })
+        }, 3000)
+
+        return () => {
+            clearInterval(id)
+        }
+    }, [props.instanceID])
 
     if (viewData && connection) {
         return (
