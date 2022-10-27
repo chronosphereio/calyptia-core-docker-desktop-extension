@@ -87,7 +87,7 @@ export default function DeleteCoreInstance(props: Props) {
                 </ListItemIcon>
                 <ListItemText>Delete</ListItemText>
             </MenuItem>
-            <ConfirmationDialog keepMounted open={open} title="Delete Core Instance" onClose={onConfirm}>
+            <ConfirmationDialog confirmLabel="Delete" keepMounted open={open} title="Delete Core Instance" onClose={onConfirm}>
                 Are you sure you want to delete your core instance?
             </ConfirmationDialog>
         </>
