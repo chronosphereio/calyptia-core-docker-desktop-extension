@@ -71,7 +71,7 @@ export default function DeployCoreInstance() {
     return (
         <StyledCard title="Manage your Core Instances" subheader="To get started, click on the button below.">
             <Stack alignItems="center" justifyContent="center" gap={1} py={8}>
-                <Typography variant="h5" sx={{ color: "#1669AA" }}>Welcome to <Typography variant="h5" sx={{ display: "inline", fontWeight: 700 }}>Calyptia Core</Typography> for Docker Desktop</Typography>
+                <Typography variant="h5" sx={{ color: "#1669AA" }}>Welcome to <Typography variant="h5" component="span" sx={{ display: "inline", fontWeight: 700 }}>Calyptia Core</Typography> for Docker Desktop</Typography>
                 <Typography sx={{ color: "#0D3D61" }}>To get started, click on the button below.</Typography>
                 <Box my={4}>
                     {loading ? (
