@@ -29,8 +29,8 @@ export default function DeleteCoreInstance(props: Props) {
             mutation.mutateAsync().then(() => {
                 window.location.reload()
                 dd.desktopUI.toast.success("Core instance deleted successfully")
-            }, (err: Error) => {
-                dd.desktopUI.toast.error(err.message)
+            }, err => {
+                dd.desktopUI.toast.error(err.message || err.stderr)
             })
         }
     }
@@ -40,13 +40,12 @@ export default function DeleteCoreInstance(props: Props) {
             throw new Error("docker-desktop extension host not enabled")
         }
 
-        const args = [
+        const output = await dd.extension.host.cli.exec("kubectl", [
             "delete",
-            "deployments,services,pods",
-            "-l", "app.kubernetes.io/name=vivo",
+            "services,deployments,pods",
+            "-l", `"app.kubernetes.io/name=vivo"`,
             "--context", "docker-desktop",
-        ]
-        const output = await dd.extension.host.cli.exec("kubectl", args)
+        ])
         if (output.stderr !== "") {
             throw new Error(output.stderr)
         }
@@ -71,12 +70,12 @@ export default function DeleteCoreInstance(props: Props) {
             args.push("--cloud-url", process.env.REACT_APP_CLOUD_BASE_URL)
         }
 
+        const deleteVivoPromise = deleteVivo()
         const output = await dd.extension.host.cli.exec("calyptia", args)
         if (output.stderr !== "") {
             throw new Error(output.stderr)
         }
-
-        await deleteVivo()
+        await deleteVivoPromise
     }
 
     return (
