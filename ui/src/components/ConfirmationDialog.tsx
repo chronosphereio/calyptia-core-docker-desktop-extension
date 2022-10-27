@@ -8,6 +8,7 @@ import { PropsWithChildren } from "react"
 export type ConfirmationDialogProps = PropsWithChildren<{
     keepMounted: boolean
     title: string
+    confirmLabel: string
     open: boolean
     onClose: (value: boolean) => void | Promise<void>
 }>
@@ -32,7 +33,7 @@ export function ConfirmationDialog(props: ConfirmationDialogProps) {
             <DialogContent>{props.children}</DialogContent>
             <DialogActions>
                 <Button autoFocus onClick={onCancel}>Cancel</Button>
-                <Button onClick={onOK} color="error">Sure</Button>
+                <Button onClick={onOK} color="error">{props.confirmLabel}</Button>
             </DialogActions>
         </Dialog>
     )
