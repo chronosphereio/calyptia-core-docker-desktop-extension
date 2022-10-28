@@ -15,13 +15,13 @@ This extension installs the Calyptia Core instance inside your Kubernetes cluste
    - Go to Preferences -> Extensions -> Check "Enable Docker Extensions".
 2. Install manually the extension by running:
    ```bash
-    docker extension install calyptia/core-docker-desktop:0.3.1
+    docker extension install calyptia/core-docker-desktop:0.3.2
    ```
 
    To update an existing version, run:
 
    ```
-    docker extension update calyptia/core-docker-desktop:0.3.1
+    docker extension update calyptia/core-docker-desktop:0.3.2
    ```
 3. Navigate to the "Calyptia Core" option in the "Extensions" section of the Docker Desktop Dashboard to use.
    - Initially, it will trigger authentication against Calyptia Cloud via a simple URL.
