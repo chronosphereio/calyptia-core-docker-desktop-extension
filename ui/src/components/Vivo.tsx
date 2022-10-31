@@ -212,7 +212,7 @@ function SampleCommands(props: SampleCommandsProps) {
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="Fluent-Bit" value="1" />
+            <Tab label="Fluent Bit" value="1" />
             <Tab label="Curl" value="2" />
           </TabList>
         </Box>
