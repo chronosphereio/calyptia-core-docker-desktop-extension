@@ -9,6 +9,7 @@ import Divider from "@mui/material/Divider"
 import Grid from "@mui/material/Grid"
 import LinearProgress from "@mui/material/LinearProgress"
 import Stack from "@mui/material/Stack"
+import useTheme from "@mui/material/styles/useTheme"
 import Typography from "@mui/material/Typography"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from 'react'
@@ -24,6 +25,7 @@ import {
 } from '../lib/vivo'
 import CoreInstanceMenu from "./CoreInstanceMenu"
 import StyledCard from "./StyledCard"
+import { SubCard } from "./SubCard"
 import Vivo from "./Vivo"
 
 type Props = {
@@ -192,15 +194,15 @@ export default function CoreInstance(props: Props) {
             </StyledCard>
             <Card sx={{ display: "flex", justifyContent: "space-between", marginTop: "1rem", padding: "1rem" }}>
                 <div>
-                    <Typography color="#0D3D61" variant="body1" fontWeight={500}>
+                    <Typography variant="body1" fontWeight={500}>
                         Check your live data with <b>Vivo</b>!
                     </Typography>
-                    <Typography color="#0D3D61" variant="body1">
+                    <Typography variant="body1">
                         Inspect your events live in one space. To get started just add a <b>Vivo</b> destination to your
                         pipeline ;)
                     </Typography>
                 </div>
-                <Button variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() =>
+                <Button variant="contained" onClick={() =>
                     setViewData(true)}>Open Vivo</Button>
             </Card>
         </Box>
@@ -212,12 +214,15 @@ type CoreInstanceViewProps = {
 }
 
 function CoreInstanceView(props: CoreInstanceViewProps) {
+    const theme = useTheme()
+
     delete props.coreInstance["token"]
+
     return (
         <Stack>
             <Grid container spacing={2}>
                 <Grid item xs={6}>
-                    <Box bgcolor="#FAFAFA" color="#0D3D61" p={2} borderRadius={1} border="1px solid rgba(63, 81, 181, 0.08)">
+                    <SubCard>
                         <Stack direction="row" justifyContent="space-between" alignItems="flex-end" pb={2}>
                             <Typography variant="body1" fontWeight={500}>Core</Typography>
                             <CoreInstanceStatusChip status={props.coreInstance.status} />
@@ -234,16 +239,16 @@ function CoreInstanceView(props: CoreInstanceViewProps) {
                                 <>
                                     <Typography sx={{ opacity: 0.7 }}>Tags</Typography>
                                     <Stack direction="row" gap={1}>{props.coreInstance.tags.map(tag => (
-                                        <Chip key={tag} label={tag} />
+                                        <Chip key={tag} label={tag} sx={{ color: theme.palette.mode !== "dark" ? "white" : undefined, bgcolor: theme.palette.mode === "dark" ? "#3D6178" : "#9FA7DA" }} />
                                     ))}</Stack>
                                 </>
                             ) : null}
                         </Box>
-                    </Box>
+                    </SubCard>
                 </Grid>
 
                 <Grid item xs={6}>
-                    <Box bgcolor="#FAFAFA" color="#0D3D61" p={2} borderRadius={1} border="1px solid rgba(63, 81, 181, 0.08)" height="100%">
+                    <SubCard height="100%">
                         <Typography variant="body1" fontWeight={500} pb={2} pt={1}>Kubernetes</Typography>
                         <Divider />
                         <Box display="grid" gridTemplateColumns="auto 1fr" gridTemplateRows="auto" mt={2} gap={2}>
@@ -253,11 +258,11 @@ function CoreInstanceView(props: CoreInstanceViewProps) {
                             <Typography sx={{ opacity: 0.7 }}>Version</Typography>
                             <Typography>{props.coreInstance.metadata?.["k8s.cluster_version"] ?? "Unknown"}</Typography>
                         </Box>
-                    </Box>
+                    </SubCard>
                 </Grid>
             </Grid >
             <Stack my={4} alignItems="center" gap={2}>
-                <Typography sx={{ color: "#0D3D61" }}>Manage your core instance from your browser:</Typography>
+                <Typography color="text.secondary" sx={{ opacity: 0.8 }}>Manage your core instance from your browser:</Typography>
                 <ManageCoreBtn instanceID={props.coreInstance.id} />
             </Stack>
         </Stack >
@@ -272,7 +277,7 @@ function ManageCoreBtn(props: ManageCoreBtnProps) {
     const dd = useDockerDesktopClient()
 
     return (
-        <Button startIcon={<img src={birdDarkSrc} alt="Calyptia bird" />} variant="contained" sx={{ backgroundColor: "#1669AA" }} onClick={() => {
+        <Button startIcon={<img src={birdDarkSrc} alt="Calyptia bird" />} variant="contained" onClick={() => {
             const host = process.env.REACT_APP_CLOUD_BASE_URL !== "https://cloud-api.calyptia.com" ? "core-next.calyptia.com" : "core.calyptia.com"
             dd.host.openExternal(`https://${host}/${encodeURIComponent(props.instanceID)}`)
         }}>Manage Core</Button>
