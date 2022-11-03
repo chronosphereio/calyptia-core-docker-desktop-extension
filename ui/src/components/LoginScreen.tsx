@@ -4,9 +4,11 @@ import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Link from "@mui/material/Link"
 import Paper from "@mui/material/Paper"
+import useTheme from "@mui/material/styles/useTheme"
 import Typography from "@mui/material/Typography"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
+import logoDarkSrc from "../images/logo-dark.svg"
 import logoLightSrc from "../images/logo-light.svg"
 import { DeviceCode } from "../lib/auth"
 
@@ -18,6 +20,8 @@ export type LoginScreenProps = {
 
 export default function LoginScreen(props: LoginScreenProps) {
     const dd = useDockerDesktopClient()
+    const theme = useTheme()
+    const logoSrc = useMemo(() => theme.palette.mode === "dark" ? logoDarkSrc : logoLightSrc, [theme.palette.mode])
 
     return (
         <Box sx={{
@@ -34,10 +38,10 @@ export default function LoginScreen(props: LoginScreenProps) {
                 gap: ".5rem",
             }}>
                 <Box sx={{ mb: 2 }}>
-                    <img src={logoLightSrc} alt="Logo" />
+                    <img src={logoSrc} alt="Logo" />
                 </Box>
-                <Typography color="#1669aa" variant="h5">Observability, simplified.</Typography>
-                <Typography color="#0d3d61" variant="body1">Eliminate the complexity of configuring and maintaining your observability pipelines.</Typography>
+                <Typography variant="h5" color={theme.palette.mode === "dark" ? "#0199FF" : "#1669AA"}>Observability, simplified.</Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ opacity: 0.8 }}>Eliminate the complexity of configuring and maintaining your observability pipelines.</Typography>
                 {props.loading ? (
                     <>
                         {/* AbcIcon is there only to take space so the text doesn't overlay with the loader indicator. */}
@@ -59,7 +63,7 @@ export default function LoginScreen(props: LoginScreenProps) {
                         ) : null}
                     </>
                 ) : (
-                    <Button variant="contained" color="primary" sx={{ mt: 2, backgroundColor: "#1669aa" }} onClick={props.onLoginClick}>LOG IN WITH BROWSER</Button>
+                    <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={props.onLoginClick}>LOG IN WITH BROWSER</Button>
                 )}
             </Box>
             <Box>
@@ -71,14 +75,14 @@ export default function LoginScreen(props: LoginScreenProps) {
                         padding: "1rem",
                     }}>
                         <Box>
-                            <Typography color="#0d3d61" variant="h6">
+                            <Typography variant="h6" color="text.secondary" sx={{ opacity: 0.8 }}>
                                 New to Calyptia?
                             </Typography>
-                            <Typography color="#0d3d61" variant="body2">
+                            <Typography variant="body2" color="text.secondary" sx={{ opacity: 0.8 }}>
                                 Learn how Calyptia works and how to use it with Docker in our docs.
                             </Typography>
                         </Box>
-                        <Button variant="contained" color="primary" sx={{ backgroundColor: "#1669aa" }} onClick={() => {
+                        <Button variant="contained" color="primary" onClick={() => {
                             dd.host.openExternal("https://docs.fluentbit.io/manual/administration/monitoring#calyptia-cloud")
                         }}>
                             READ DOCS

@@ -61,8 +61,10 @@ function CoreInstanceDeploymentLoader() {
     useEffect(() => {
         const ctrl = new AbortController()
         loadCoreInstanceID(ctrl.signal).then(setCoreInstance, err => {
-            console.error(err)
-            setErr(err)
+            if (err.name !== "AbortError") {
+                console.error(err)
+                setErr(err)
+            }
         }).finally(() => {
             setLoading(false)
         })

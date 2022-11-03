@@ -14,6 +14,7 @@ import IconButton from "@mui/material/IconButton"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
 import Stack from "@mui/material/Stack"
+import useTheme from "@mui/material/styles/useTheme"
 import Switch from "@mui/material/Switch"
 import Tab from '@mui/material/Tab'
 import Typography from "@mui/material/Typography"
@@ -24,6 +25,9 @@ import {
   VivoConnection, VivoStdoutEventData
 } from '../lib/vivo'
 import StyledCard from "./StyledCard"
+import { SubCard } from "./SubCard"
+
+const logAccentColor = "#7B61FF"
 
 interface VivoProps {
   connection: VivoConnection
@@ -46,6 +50,7 @@ function exampleCurlCommand(port: number) {
 export default function Vivo({
   connection, records, setViewData, clearRecords, filteredRecords, changeFilter, filter
 }: VivoProps) {
+  const theme = useTheme()
   const [currentPort, setCurrentPort] = useState(connection.currentPort())
   const [pausedRecords, setPausedRecords] = useState<VivoStdoutEventData[] | null>(null)
   const [filterDiagnostics, setFilterDiagnostics] = useState([] as Diagnostic[])
@@ -113,7 +118,7 @@ export default function Vivo({
     <Box mb={10}>
       <StyledCard title="Live Data Viewer" subheader="All your events in only one space" action={(
         <Box>
-          <Button sx={{ color: "#404186" }} startIcon={<ArrowBackIosNew />} onClick={() => {
+          <Button sx={{ color: "text.primary" }} startIcon={<ArrowBackIosNew />} onClick={() => {
             setViewData(false)
           }}>
             Back
@@ -135,11 +140,12 @@ export default function Vivo({
         </Stack>
 
         {filterEnabled && (
-          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} my={2}>
+          <Box my={2} borderRadius={1} overflow="hidden" border="1px solid rgba(63, 81, 181, 0.08)">
             <CodeMirror
               placeholder="Search through your logs records that include the following text"
               maxHeight="40vh"
               height="auto"
+              theme={theme.palette.mode}
               onChange={filterChanged}
               extensions={[json(), linter(linterCallback)]}
               basicSetup={{ lineNumbers: false }} />
@@ -157,6 +163,7 @@ interface FluentBitDataProps {
 }
 
 function FluentBitData({ records }: FluentBitDataProps) {
+  const theme = useTheme()
   const [foldMap, setFoldMap] = useState({})
 
   const onFold = id => {
@@ -164,22 +171,22 @@ function FluentBitData({ records }: FluentBitDataProps) {
   }
 
   return (
-    <Box p={2} bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} maxHeight="60vh" sx={{ overflowY: "auto" }}>
+    <SubCard maxHeight="60vh" sx={{ overflowY: "auto" }}>
       <List sx={{ display: "flex", flexDirection: "column-reverse" }}>
         {records.map(record => {
           const fold = Object.entries(foldMap).some(([k, v]) => k === record.id && v)
           return (
             <ListItem key={record.id}>
-              <Box borderLeft="3px solid #7B61FF" borderRadius="3px" bgcolor={fold ? "#F1F0F9" : "white"} width="100%" px={2} py={0}>
+              <Box borderRadius="3px" width="100%" px={2} py={0.5} bgcolor={fold ? theme.palette.mode === "dark" ? "#224154" : "#F1F0F9" : theme.palette.mode === "dark" ? "#274252" : "#fff"} borderLeft={"3px solid " + logAccentColor}>
                 <Stack direction="row" alignItems="center" gap={1}>
                   <Box>
                     <Stack direction="row" gap={1} alignItems="center">
-                      <Typography color="#7B61FF">{new Date(Number(record.data.date) * 1000).toLocaleString()}</Typography>
+                      <Typography color={logAccentColor}>{new Date(Number(record.data.date) * 1000).toLocaleString()}</Typography>
                       <IconButton onClick={() => onFold(record.id)}>
                         {fold ? (
-                          <UnfoldMore sx={{ color: "#7B61FF" }} />
+                          <UnfoldMore />
                         ) : (
-                          <UnfoldLess sx={{ color: "#7B61FF" }} />
+                          <UnfoldLess />
                         )}
                       </IconButton>
                     </Stack>
@@ -191,7 +198,7 @@ function FluentBitData({ records }: FluentBitDataProps) {
           )
         })}
       </List>
-    </Box>
+    </SubCard>
   )
 }
 
@@ -207,7 +214,7 @@ function SampleCommands(props: SampleCommandsProps) {
   }
 
   return (
-    <Box sx={{ width: '100%', typography: 'body1' }}>
+    <Box sx={{ width: '100%' }}>
       <Typography>Sample Commands to Send Data</Typography>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -217,14 +224,14 @@ function SampleCommands(props: SampleCommandsProps) {
           </TabList>
         </Box>
         <TabPanel value="1" sx={{ pl: 0, pr: 0 }}>
-          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} px={2} overflow="auto">
+          <SubCard overflow="auto" py={0}>
             <pre>{exampleFluentBitCommand(props.port)}</pre>
-          </Box>
+          </SubCard>
         </TabPanel>
         <TabPanel value="2" sx={{ pl: 0, pr: 0 }}>
-          <Box bgcolor="#FAFAFA" border="1px solid rgba(63, 81, 181, 0.08)" borderRadius={1} px={2} overflow="auto">
+          <SubCard overflow="auto" py={0}>
             <pre>{exampleCurlCommand(props.port)}</pre>
-          </Box>
+          </SubCard>
         </TabPanel>
       </TabContext>
     </Box>
