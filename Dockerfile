@@ -22,7 +22,7 @@ LABEL org.opencontainers.image.title="Calyptia Core" \
     org.opencontainers.image.vendor="Calyptia Inc." \
     com.docker.desktop.extension.api.version=">= 0.2.3" \
     com.docker.extension.detailed-description="This extension automates integration with Calyptia Core to create an instance in your local Docker Desktop Kubernetes cluster. \
-    It will allow you to use, evaluate and test Calyptia Core without needing to deploy or use a Kubernetes cluster. \
+    Calyptia Core simplifies observability in your Kubernetes cluster by automating logging and optionally allows you to create custom data pipelines with support for user-defined processing rules. \
     For full details and a demo please see https://calyptia.com/products/calyptia-core." \
     com.docker.extension.publisher-url="https://www.calyptia.com" \
     com.docker.extension.changelog="Integration with Calyptia Core UI and automated authentication." \
