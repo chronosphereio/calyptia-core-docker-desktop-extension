@@ -40,11 +40,11 @@ interface VivoProps {
 }
 
 function exampleFluentBitCommand(port: number) {
-  return `fluent-bit -i dummy -o http -pformat=json -phost=localhost -pport=${port} -puri=/console -ptls=off`
+  return `fluent-bit -i dummy -o http -pformat=json -phost=localhost -pport=${port} -puri=/sink -ptls=off`
 }
 
 function exampleCurlCommand(port: number) {
-  return `curl -H 'Content-Type: application/json' -d '[{"log": "line 1"},{"log":"line 2"}]' http://localhost:${port}/console`
+  return `curl -H 'Content-Type: application/json' -d '[{"log": "line 1"},{"log":"line 2"}]' http://localhost:${port}/sink`
 }
 
 export default function Vivo({
