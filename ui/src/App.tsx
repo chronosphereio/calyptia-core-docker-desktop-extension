@@ -1,3 +1,4 @@
+import { Auth0Provider } from "@auth0/auth0-react"
 import Container from "@mui/material/Container"
 import CssBaseline from "@mui/material/CssBaseline"
 import { PaletteOptions } from "@mui/material/styles/createPalette"
@@ -10,7 +11,7 @@ import { useMemo } from "react"
 import AuthGuard from "./components/AuthGuard"
 import CoreInstanceScreen from "./components/CoreInstanceScreen"
 import Header from "./components/Header"
-import { AuthClientProvider } from "./hooks/auth"
+import { CloudClientProvider } from "./hooks/cloud"
 import { DockerDesktopClientProvider } from "./hooks/docker-desktop"
 import { ProjectTokenProvider } from "./hooks/project-token"
 
@@ -66,21 +67,28 @@ export function App() {
             <ThemeProvider theme={theme}>
                 <CssBaseline />
                 <QueryClientProvider client={queryClient}>
-                    <AuthClientProvider
-                        auth0Domain={process.env.REACT_APP_AUTH0_DOMAIN}
-                        auth0ClientID={process.env.REACT_APP_AUTH0_CLIENT_ID}
-                        auth0Audience={process.env.REACT_APP_AUTH0_AUDIENCE}
+                    <Auth0Provider
+                        domain={process.env.REACT_APP_AUTH0_DOMAIN}
+                        clientId={process.env.REACT_APP_AUTH0_CLIENT_ID}
+                        cacheLocation="localstorage"
+                        authorizationParams={{
+                            display: "popup",
+                            audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+                            redirect_uri: process.env.REACT_APP_AUTH0_REDIRECT_URI || "docker-desktop://dashboard/extension-tab?extensionId=calyptia/core-docker-desktop"
+                        }}
                     >
-                        <AuthGuard cloudBaseURL={process.env.REACT_APP_CLOUD_BASE_URL}>
-                            <ProjectTokenProvider>
-                                <Header />
-                                <br />
-                                <Container>
-                                    <CoreInstanceScreen />
-                                </Container>
-                            </ProjectTokenProvider>
+                        <AuthGuard>
+                            <CloudClientProvider baseURL={process.env.REACT_APP_CLOUD_BASE_URL}>
+                                <ProjectTokenProvider>
+                                    <Header />
+                                    <br />
+                                    <Container>
+                                        <CoreInstanceScreen />
+                                    </Container>
+                                </ProjectTokenProvider>
+                            </CloudClientProvider>
                         </AuthGuard>
-                    </AuthClientProvider>
+                    </Auth0Provider>
                 </QueryClientProvider>
             </ThemeProvider>
         </DockerDesktopClientProvider>

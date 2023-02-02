@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react"
 import ExpandMore from "@mui/icons-material/ExpandMore"
 import AppBar from '@mui/material/AppBar'
 import Avatar from '@mui/material/Avatar'
@@ -10,9 +11,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from "@mui/material/Typography"
 import { useState } from "react"
-import { useAuthClient } from "../hooks/auth"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
-import { useUserInfo } from "../hooks/user-info"
 import logoDarkSrc from "../images/logo-dark.svg"
 import { getUserInfoDisplayName } from "../lib/auth"
 
@@ -20,9 +19,8 @@ const headerBGColor = "#1E5A89"
 const headerTextColor = "#fff"
 
 export default function Header() {
-    const auth = useAuthClient()
+    const { logout, user } = useAuth0()
     const dd = useDockerDesktopClient()
-    const usr = useUserInfo()
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
     const open = Boolean(anchorEl)
@@ -35,8 +33,11 @@ export default function Header() {
     }
 
     const onLogout = () => {
-        localStorage.clear()
-        dd.host.openExternal(auth.buildLogoutURL())
+        logout({
+            openUrl: async url => {
+                dd.host.openExternal(url)
+            },
+        })
         window.location.reload()
     }
 
@@ -51,10 +52,10 @@ export default function Header() {
                         <Tooltip title="Account settings">
                             <Button onClick={onOpenMenu} variant="text" sx={{ color: headerTextColor }}>
                                 <Stack direction="row" alignItems="center">
-                                    <Avatar alt={getUserInfoDisplayName(usr)} src={usr.picture} imgProps={{ referrerPolicy: "no-referrer" }} />
+                                    <Avatar alt={getUserInfoDisplayName(user)} src={user.picture} imgProps={{ referrerPolicy: "no-referrer" }} />
                                     <Stack sx={{ ml: 2 }} alignItems="flex-start">
-                                        <Typography variant="body1" sx={{ textTransform: "none" }}>{getUserInfoDisplayName(usr)}</Typography>
-                                        <Typography variant="caption" sx={{ textTransform: "none", opacity: 0.6 }} >{usr.email}</Typography>
+                                        <Typography variant="body1" sx={{ textTransform: "none" }}>{getUserInfoDisplayName(user)}</Typography>
+                                        <Typography variant="caption" sx={{ textTransform: "none", opacity: 0.6 }} >{user.email}</Typography>
                                     </Stack>
                                     <ExpandMore />
                                 </Stack>

@@ -1,16 +1,16 @@
+import { useAuth0 } from "@auth0/auth0-react"
 import { createContext, PropsWithChildren, useContext } from "react"
-import { ReuseTokenSource } from "../lib/auth"
 import { Client as CloudClient } from "../lib/cloud"
 
 const CloudClientContext = createContext(null as unknown as CloudClient)
 
 export type CloudClientProviderProps = {
     baseURL: string
-    tokenSource: ReuseTokenSource
 }
 
 export function CloudClientProvider(props: PropsWithChildren<CloudClientProviderProps>) {
-    const cloudClient = new CloudClient(props.baseURL, props.tokenSource)
+    const { getAccessTokenSilently } = useAuth0()
+    const cloudClient = new CloudClient(props.baseURL, () => getAccessTokenSilently())
     return (
         <CloudClientContext.Provider value={cloudClient} children={props.children} />
     )
