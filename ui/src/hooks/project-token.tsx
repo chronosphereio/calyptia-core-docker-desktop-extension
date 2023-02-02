@@ -50,7 +50,6 @@ export function ProjectTokenProvider(props: PropsWithChildren<unknown>) {
                         dd.host.openExternal(url)
                     },
                 })
-                window.location.reload()
             }
 
             setErr(err)
