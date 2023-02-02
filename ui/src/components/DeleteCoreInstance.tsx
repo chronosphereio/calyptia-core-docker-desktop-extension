@@ -4,6 +4,7 @@ import ListItemText from "@mui/material/ListItemText"
 import MenuItem from "@mui/material/MenuItem"
 import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
+import { CLOUD_BASE_URL } from "../consts"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import { useProjectToken } from "../hooks/project-token"
 import { ConfirmationDialog } from "./ConfirmationDialog"
@@ -66,8 +67,8 @@ export default function DeleteCoreInstance(props: Props) {
             "--yes",
         ]
 
-        if (process.env.REACT_APP_CLOUD_BASE_URL !== "https://cloud-api.calyptia.com") {
-            args.push("--cloud-url", process.env.REACT_APP_CLOUD_BASE_URL)
+        if (CLOUD_BASE_URL !== "https://cloud-api.calyptia.com") {
+            args.push("--cloud-url", CLOUD_BASE_URL)
         }
 
         const deleteVivoPromise = deleteVivo()

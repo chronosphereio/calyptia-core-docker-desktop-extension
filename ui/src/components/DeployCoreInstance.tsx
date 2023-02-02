@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack"
 import useTheme from "@mui/material/styles/useTheme"
 import Typography from "@mui/material/Typography"
 import { useState } from "react"
+import { CLOUD_BASE_URL } from "../consts"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import { useProjectToken } from "../hooks/project-token"
 import StyledCard from "./StyledCard"
@@ -47,8 +48,8 @@ export default function DeployCoreInstance() {
             "--kube-context", "docker-desktop"
         ]
 
-        if (process.env.REACT_APP_CLOUD_BASE_URL !== "https://cloud-api.calyptia.com") {
-            args.push("--cloud-url", process.env.REACT_APP_CLOUD_BASE_URL)
+        if (CLOUD_BASE_URL !== "https://cloud-api.calyptia.com") {
+            args.push("--cloud-url", CLOUD_BASE_URL)
         }
 
         const output = await dd.extension.host.cli.exec("calyptia", args)

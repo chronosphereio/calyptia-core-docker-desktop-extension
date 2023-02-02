@@ -1,0 +1,5 @@
+export const CLOUD_BASE_URL = process.env.REACT_APP_CLOUD_BASE_URL || "https://cloud-api.calyptia.com"
+export const AUTH0_DOMAIN = process.env.REACT_APP_AUTH0_DOMAIN || "sso.calyptia.com"
+export const AUTH0_CLIENT_ID = process.env.REACT_APP_AUTH0_CLIENT_ID || "hODtvC3oOQVwT8ILxoQFv5eRtgElsdFh"
+export const AUTH0_AUDIENCE = process.env.REACT_APP_AUTH0_AUDIENCE || "https://config.calyptia.com"
+export const AUTH0_REDIRECT_URI = process.env.REACT_APP_AUTH0_REDIRECT_URI || "docker-desktop://dashboard/extension-tab?extensionId=calyptia/core-docker-desktop"
