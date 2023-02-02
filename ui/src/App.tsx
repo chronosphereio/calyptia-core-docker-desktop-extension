@@ -11,6 +11,7 @@ import { useMemo } from "react"
 import AuthGuard from "./components/AuthGuard"
 import CoreInstanceScreen from "./components/CoreInstanceScreen"
 import Header from "./components/Header"
+import { AUTH0_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_DOMAIN, AUTH0_REDIRECT_URI, CLOUD_BASE_URL } from "./consts"
 import { CloudClientProvider } from "./hooks/cloud"
 import { DockerDesktopClientProvider } from "./hooks/docker-desktop"
 import { ProjectTokenProvider } from "./hooks/project-token"
@@ -68,17 +69,17 @@ export function App() {
                 <CssBaseline />
                 <QueryClientProvider client={queryClient}>
                     <Auth0Provider
-                        domain={process.env.REACT_APP_AUTH0_DOMAIN}
-                        clientId={process.env.REACT_APP_AUTH0_CLIENT_ID}
+                        domain={AUTH0_DOMAIN}
+                        clientId={AUTH0_CLIENT_ID}
                         cacheLocation="localstorage"
                         authorizationParams={{
                             display: "popup",
-                            audience: process.env.REACT_APP_AUTH0_AUDIENCE,
-                            redirect_uri: process.env.REACT_APP_AUTH0_REDIRECT_URI || "docker-desktop://dashboard/extension-tab?extensionId=calyptia/core-docker-desktop",
+                            audience: AUTH0_AUDIENCE,
+                            redirect_uri: AUTH0_REDIRECT_URI,
                         }}
                     >
                         <AuthGuard>
-                            <CloudClientProvider baseURL={process.env.REACT_APP_CLOUD_BASE_URL}>
+                            <CloudClientProvider baseURL={CLOUD_BASE_URL}>
                                 <ProjectTokenProvider>
                                     <Header />
                                     <br />

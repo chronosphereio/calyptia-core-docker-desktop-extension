@@ -13,6 +13,7 @@ import useTheme from "@mui/material/styles/useTheme"
 import Typography from "@mui/material/Typography"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from 'react'
+import { CLOUD_BASE_URL } from "../consts"
 import { useCloudClient } from "../hooks/cloud"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
 import birdDarkSrc from "../images/bird-dark.svg"
@@ -278,7 +279,7 @@ function ManageCoreBtn(props: ManageCoreBtnProps) {
 
     return (
         <Button startIcon={<img src={birdDarkSrc} alt="Calyptia bird" />} variant="contained" onClick={() => {
-            const host = process.env.REACT_APP_CLOUD_BASE_URL !== "https://cloud-api.calyptia.com" ? "core-next.calyptia.com" : "core.calyptia.com"
+            const host = CLOUD_BASE_URL !== "https://cloud-api.calyptia.com" ? "core-next.calyptia.com" : "core.calyptia.com"
             dd.host.openExternal(`https://${host}/${encodeURIComponent(props.instanceID)}`)
         }}>Manage Core</Button>
     )
