@@ -74,7 +74,7 @@ export function App() {
                         authorizationParams={{
                             display: "popup",
                             audience: process.env.REACT_APP_AUTH0_AUDIENCE,
-                            redirect_uri: process.env.REACT_APP_AUTH0_REDIRECT_URI || "docker-desktop://dashboard/extension-tab?extensionId=calyptia/core-docker-desktop"
+                            redirect_uri: process.env.REACT_APP_AUTH0_REDIRECT_URI || "docker-desktop://dashboard/extension-tab?extensionId=calyptia/core-docker-desktop",
                         }}
                     >
                         <AuthGuard>

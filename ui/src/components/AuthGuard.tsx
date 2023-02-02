@@ -8,7 +8,7 @@ import LoginScreen from "./LoginScreen"
 
 export default function AuthGuard(props: PropsWithChildren) {
     const dd = useDockerDesktopClient()
-    const { isLoading, isAuthenticated, error, user, loginWithRedirect } = useAuth0()
+    const { isLoading, isAuthenticated, error, loginWithRedirect } = useAuth0()
 
     if (error) {
         return (

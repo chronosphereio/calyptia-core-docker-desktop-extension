@@ -43,7 +43,7 @@ export default function LoginScreen(props: LoginScreenProps) {
                     <>
                         {/* AbcIcon is there only to take space so the text doesn't overlay with the loader indicator. */}
                         <LoadingButton loading loadingPosition="start" variant="outlined" startIcon={<AbcIcon />} >
-                            <span>Waiting authorization</span>
+                            <span>Logging you in</span>
                         </LoadingButton>
                     </>
                 ) : (

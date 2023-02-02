@@ -38,7 +38,6 @@ export default function Header() {
                 dd.host.openExternal(url)
             },
         })
-        window.location.reload()
     }
 
     return (
