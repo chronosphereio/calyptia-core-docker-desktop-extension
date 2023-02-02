@@ -15,7 +15,7 @@ install-extension: build-extension ## Install the extension
 update-extension: build-extension ## Update the extension
 	docker extension update $(IMAGE):$(TAG) --force
 
-dev-ui: ## Make sure to run `cd ui && npm start` firts.
+dev-ui: ## Make sure to run `cd ui && npm start` first.
 	docker extension dev ui-source $(IMAGE) http://localhost:3000
 
 debug-ui: ## Open devtools
