@@ -1,10 +1,10 @@
+import { useAuth0 } from "@auth0/auth0-react"
 import Alert from "@mui/material/Alert"
 import AlertTitle from "@mui/material/AlertTitle"
 import Box from "@mui/material/Box"
 import LinearProgress from "@mui/material/LinearProgress"
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react"
 import { Token } from "../lib/cloud"
-import { useAuthClient } from "./auth"
 import { useCloudClient } from "./cloud"
 import { useDockerDesktopClient } from "./docker-desktop"
 
@@ -13,7 +13,7 @@ const ProjectTokenContext = createContext(null as unknown as Token)
 export function ProjectTokenProvider(props: PropsWithChildren<unknown>) {
     const cloud = useCloudClient()
     const dd = useDockerDesktopClient()
-    const auth = useAuthClient()
+    const { logout } = useAuth0()
     const [tok, setTok] = useState<Token | null>(null)
     const [err, setErr] = useState<Error | null>(null)
 
@@ -45,8 +45,11 @@ export function ProjectTokenProvider(props: PropsWithChildren<unknown>) {
             console.error(err)
             // backward-compatible fix for users that did login without a verified email.
             if (err.message === "email not verified") {
-                localStorage.clear()
-                dd.host.openExternal(auth.buildLogoutURL())
+                logout({
+                    openUrl: async url => {
+                        dd.host.openExternal(url)
+                    },
+                })
                 window.location.reload()
             }
 

@@ -1,4 +1,3 @@
-import { ReuseTokenSource } from "./auth"
 import { handleResp } from "./util"
 
 export type FetchProjectsOpts = {
@@ -40,7 +39,7 @@ export enum CoreInstanceStatus {
 }
 
 export class Client {
-    constructor(private baseURL: string, private tokenSource: ReuseTokenSource) { }
+    constructor(private baseURL: string, private getToken: () => Promise<string>) { }
 
     async fetchProjects(signal: AbortSignal, opts?: FetchProjectsOpts) {
         const u = new URL("/v1/projects", this.baseURL)
@@ -53,12 +52,12 @@ export class Client {
             }
         }
 
-        const tok = await this.tokenSource.token()
+        const tok = await this.getToken()
         const resp = await fetch(u.toString(), {
             signal,
             method: "GET",
             headers: {
-                Authorization: tok.tokenType + " " + tok.accessToken,
+                Authorization: "Bearer " + tok,
             }
         })
         const json = await handleResp<Project[]>(resp)
@@ -74,12 +73,12 @@ export class Client {
             u.searchParams.set("before", opts.before)
         }
 
-        const tok = await this.tokenSource.token()
+        const tok = await this.getToken()
         const resp = await fetch(u.toString(), {
             signal,
             method: "GET",
             headers: {
-                Authorization: tok.tokenType + " " + tok.accessToken,
+                Authorization: "Bearer " + tok,
             }
         })
         const json = await handleResp<Token[]>(resp)
@@ -88,12 +87,12 @@ export class Client {
 
     async fetchCoreInstance(signal: AbortSignal, instanceID: string) {
         const u = new URL("/v1/aggregators/" + encodeURIComponent(instanceID), this.baseURL)
-        const tok = await this.tokenSource.token()
+        const tok = await this.getToken()
         const resp = await fetch(u.toString(), {
             signal,
             method: "GET",
             headers: {
-                Authorization: tok.tokenType + " " + tok.accessToken,
+                Authorization: "Bearer " + tok,
             }
         })
         const json = await handleResp<CoreInstance>(resp)

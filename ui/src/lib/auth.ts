@@ -1,3 +1,4 @@
+import { User } from "@auth0/auth0-react"
 import { HTTPError } from "./error"
 import { handleResp, isPlainObject, sleep } from "./util"
 
@@ -95,7 +96,7 @@ export type UserInfo = {
     email_verified: boolean
 }
 
-export function getUserInfoDisplayName(usr: UserInfo) {
+export function getUserInfoDisplayName(usr: User) {
     if (typeof usr.name === "string" && usr.name !== "") {
         return usr.name
     }
