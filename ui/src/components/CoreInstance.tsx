@@ -279,8 +279,9 @@ function ManageCoreBtn(props: ManageCoreBtnProps) {
 
     return (
         <Button startIcon={<img src={birdDarkSrc} alt="Calyptia bird" />} variant="contained" onClick={() => {
+            // TODO: Project selection is not part of the URL yet.
             const host = CLOUD_BASE_URL !== "https://cloud-api.calyptia.com" ? "core-next.calyptia.com" : "core.calyptia.com"
-            dd.host.openExternal(`https://${host}/${encodeURIComponent(props.instanceID)}`)
+            dd.host.openExternal(`https://${host}/core-instances/${encodeURIComponent(props.instanceID)}`)
         }}>Manage Core</Button>
     )
 }
