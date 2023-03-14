@@ -1,5 +1,9 @@
 FROM --platform=$BUILDPLATFORM node:19.7.0-alpine3.16 AS client-builder
 
+# Required for react-create-app to work properly.
+ENV PUBLIC_URL=.
+ENV BROWSER=none
+
 WORKDIR /ui
 # cache packages in layer
 COPY ui/package.json /ui/package.json
