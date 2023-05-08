@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:19.8.1-alpine3.16 AS client-builder
+FROM --platform=$BUILDPLATFORM node:20.1.0-alpine3.16 AS client-builder
 
 # Required for react-create-app to work properly.
 ENV PUBLIC_URL=.
