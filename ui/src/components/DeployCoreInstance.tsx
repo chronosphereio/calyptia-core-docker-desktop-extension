@@ -3,8 +3,8 @@ import LoadingButton from "@mui/lab/LoadingButton"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Stack from "@mui/material/Stack"
-import useTheme from "@mui/material/styles/useTheme"
 import Typography from "@mui/material/Typography"
+import useTheme from "@mui/material/styles/useTheme"
 import { useState } from "react"
 import { CLOUD_BASE_URL } from "../consts"
 import { useDockerDesktopClient } from "../hooks/docker-desktop"
@@ -25,13 +25,35 @@ export default function DeployCoreInstance() {
         const args = [
             "apply",
             "--context", "docker-desktop",
-            "-f", "https://raw.githubusercontent.com/calyptia/vivo/master/vivo.yaml"
+            "-f", "https://raw.githubusercontent.com/calyptia/vivo/master/vivo-deployment.yaml"
         ]
 
         const output = await dd.extension.host.cli.exec("kubectl", args)
         if (output.stderr !== "") {
             throw new Error(output.stderr)
         }
+
+        return output
+    }
+
+    const installOperator = async () => {
+        const args = [
+            "install",
+            "operator",
+            "--token", projectToken.token,
+            "--wait",
+        ]
+
+        if (CLOUD_BASE_URL !== "https://cloud-api.calyptia.com") {
+            args.push("--cloud-url", CLOUD_BASE_URL)
+        }
+
+        const output = await dd.extension.host.cli.exec("calyptia", args)
+        if (output.stderr !== "") {
+            throw new Error(output.stderr)
+        }
+
+        return output
     }
 
     const deployCoreInstance = async () => {
@@ -57,13 +79,23 @@ export default function DeployCoreInstance() {
             throw new Error(output.stderr)
         }
 
-        // Assumption is we deploy/delete Vivo with Core - no extra handling, any issues then delete and re-deploy
+        return output
+    }
+
+    const deploy = async () => {
+        await deployCoreInstance().catch(err => {
+            const msg = String(err.message || err.stderr)
+            if (msg.includes("install operator")) {
+                return installOperator().then(deploy)
+            }
+            throw err
+        })
         await deployVivo()
     }
 
     const onDeploy = () => {
         setLoading(true)
-        deployCoreInstance().then(() => {
+        deploy().then(() => {
             window.location.reload()
         }).catch(err => {
             dd.desktopUI.toast.error(err.message || err.stderr)
