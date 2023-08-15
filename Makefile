@@ -21,6 +21,9 @@ dev-ui: ## Make sure to run `cd ui && npm start` first.
 debug-ui: ## Open devtools
 	docker extension dev debug $(IMAGE)
 
+reset-dev:
+	docker extension dev reset $(IMAGE)
+
 prepare-buildx: ## Create buildx builder for multi-arch build, if not exists
 	docker buildx inspect $(BUILDER) || docker buildx create --name=$(BUILDER) --driver=docker-container --driver-opt=network=host
 
